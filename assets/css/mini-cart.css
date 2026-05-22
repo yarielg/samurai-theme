@@ -1,0 +1,499 @@
+/* ==========================================================================
+   Mini Cart Drawer
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Backdrop
+   -------------------------------------------------------------------------- */
+.sf-minicart-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: calc(var(--sf-z-drawer) - 1);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.sf-minicart-backdrop.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* --------------------------------------------------------------------------
+   2. Drawer shell
+   -------------------------------------------------------------------------- */
+.sf-minicart {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 100vw);
+  background: var(--sf-color-card);
+  z-index: var(--sf-z-drawer);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -8px 0 40px rgba(0, 0, 0, 0.18);
+}
+
+.sf-minicart.is-open {
+  transform: translateX(0);
+}
+
+.sf-minicart__inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   3. Head
+   -------------------------------------------------------------------------- */
+.sf-minicart__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sf-space-4) var(--sf-space-5);
+  background: var(--sf-color-dark);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.sf-minicart__head-left {
+  display: flex;
+  align-items: center;
+  gap: var(--sf-space-2);
+  color: var(--sf-color-accent);
+}
+
+.sf-minicart__title {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-base);
+  color: #fff;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+}
+
+.sf-minicart__item-count {
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-medium);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.sf-minicart__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  border-radius: var(--sf-radius);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: background var(--sf-transition), color var(--sf-transition);
+  flex-shrink: 0;
+}
+
+.sf-minicart__close:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   4. Free shipping progress bar
+   -------------------------------------------------------------------------- */
+.sf-minicart__shipping {
+  padding: var(--sf-space-3) var(--sf-space-5);
+  background: var(--sf-color-dark);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.sf-minicart__shipping-msg {
+  font-size: var(--sf-text-xs);
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0 0 var(--sf-space-2);
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.sf-minicart__shipping.is-unlocked .sf-minicart__shipping-msg {
+  color: var(--sf-color-accent);
+  font-weight: var(--sf-weight-semibold);
+}
+
+.sf-minicart__shipping-track {
+  height: 4px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.sf-minicart__shipping-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sf-color-accent) 0%, #ff6a00 100%);
+  border-radius: 100px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   5. Items list (scrollable)
+   -------------------------------------------------------------------------- */
+.sf-minicart__items {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+  margin: 0;
+  padding: var(--sf-space-3) var(--sf-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-4);
+
+  /* Smooth scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.sf-minicart__items::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sf-minicart__items::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sf-minicart__items::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   6. Individual item
+   -------------------------------------------------------------------------- */
+.sf-minicart__item {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: var(--sf-space-3);
+  padding-bottom: var(--sf-space-4);
+  border-bottom: 1px solid var(--sf-color-border, #eee);
+  position: relative;
+}
+
+.sf-minicart__item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Product image */
+.sf-minicart__item-media {
+  display: block;
+  width: 80px;
+  height: 80px;
+  border-radius: var(--sf-radius);
+  overflow: hidden;
+  background: var(--sf-color-surface);
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.sf-minicart__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Item body */
+.sf-minicart__item-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-1);
+  min-width: 0;
+}
+
+.sf-minicart__item-name {
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-semibold);
+  color: var(--sf-color-text);
+  text-decoration: none;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sf-minicart__item-name:hover {
+  color: var(--sf-color-primary);
+}
+
+.sf-minicart__item-meta {
+  font-size: var(--sf-text-xs);
+  color: var(--sf-color-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Item foot: qty + price + remove */
+.sf-minicart__item-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--sf-space-3);
+  margin-top: auto;
+  padding-top: var(--sf-space-2);
+}
+
+/* Qty stepper */
+.sf-minicart__qty {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--sf-color-border, #ddd);
+  border-radius: var(--sf-radius);
+  overflow: hidden;
+  height: 30px;
+}
+
+.sf-minicart__qty-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 30px;
+  background: transparent;
+  border: none;
+  color: var(--sf-color-text);
+  cursor: pointer;
+  transition: background var(--sf-transition), color var(--sf-transition);
+  flex-shrink: 0;
+}
+
+.sf-minicart__qty-btn:hover {
+  background: var(--sf-color-surface);
+  color: var(--sf-color-primary);
+}
+
+.sf-minicart__qty-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.sf-minicart__qty-val {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-semibold);
+  color: var(--sf-color-text);
+  border-left: 1px solid var(--sf-color-border, #ddd);
+  border-right: 1px solid var(--sf-color-border, #ddd);
+  padding: 0 var(--sf-space-1);
+  line-height: 30px;
+}
+
+/* Line price */
+.sf-minicart__item-price {
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-bold);
+  color: var(--sf-color-text);
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+/* Remove button */
+.sf-minicart__item-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--sf-radius);
+  color: var(--sf-color-muted);
+  cursor: pointer;
+  transition: border-color var(--sf-transition), color var(--sf-transition), background var(--sf-transition);
+  flex-shrink: 0;
+}
+
+.sf-minicart__item-remove:hover {
+  border-color: #e53e3e;
+  color: #e53e3e;
+  background: #fff5f5;
+}
+
+/* Loading state on the item */
+.sf-minicart__item.is-loading {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   7. Footer
+   -------------------------------------------------------------------------- */
+.sf-minicart__foot {
+  padding: var(--sf-space-4) var(--sf-space-5);
+  border-top: 1px solid var(--sf-color-border, #eee);
+  background: var(--sf-color-surface, #fff);
+  flex-shrink: 0;
+}
+
+.sf-minicart__subtotal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sf-space-1);
+}
+
+.sf-minicart__subtotal-label {
+  font-size: var(--sf-text-sm);
+  color: var(--sf-color-muted);
+  font-weight: var(--sf-weight-medium);
+}
+
+.sf-minicart__subtotal-val {
+  font-size: var(--sf-text-lg);
+  font-weight: var(--sf-weight-bold);
+  color: var(--sf-color-text);
+}
+
+.sf-minicart__tax-note {
+  font-size: var(--sf-text-xs);
+  color: var(--sf-color-muted);
+  margin: 0 0 var(--sf-space-4);
+  text-align: right;
+}
+
+.sf-minicart__checkout-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sf-space-2);
+  width: 100%;
+  padding: var(--sf-space-3) var(--sf-space-4);
+  background: var(--sf-color-primary);
+  color: #fff;
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-base);
+  text-decoration: none;
+  border-radius: var(--sf-radius);
+  transition: background var(--sf-transition), transform 0.15s;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.sf-minicart__checkout-btn:hover {
+  background: #a93226;
+  transform: translateY(-1px);
+}
+
+.sf-minicart__view-cart {
+  display: block;
+  text-align: center;
+  margin-top: var(--sf-space-3);
+  font-size: var(--sf-text-sm);
+  color: var(--sf-color-muted);
+  text-decoration: none;
+  transition: color var(--sf-transition);
+}
+
+.sf-minicart__view-cart:hover {
+  color: var(--sf-color-primary);
+}
+
+/* --------------------------------------------------------------------------
+   8. Empty state
+   -------------------------------------------------------------------------- */
+.sf-minicart__empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sf-space-10) var(--sf-space-8);
+  text-align: center;
+}
+
+.sf-minicart__empty-icon {
+  display: block;
+  color: var(--sf-color-border, #ddd);
+  margin-bottom: var(--sf-space-5);
+}
+
+.sf-minicart__empty-title {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-xl);
+  color: var(--sf-color-text);
+  margin: 0 0 var(--sf-space-2);
+}
+
+.sf-minicart__empty-sub {
+  font-size: var(--sf-text-sm);
+  color: var(--sf-color-muted);
+  margin: 0 0 var(--sf-space-6);
+  line-height: 1.6;
+}
+
+.sf-minicart__empty-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sf-space-3) var(--sf-space-6);
+  background: var(--sf-color-primary);
+  color: #fff;
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-sm);
+  text-decoration: none;
+  border-radius: var(--sf-radius);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: background var(--sf-transition);
+}
+
+.sf-minicart__empty-cta:hover {
+  background: #a93226;
+}
+
+/* --------------------------------------------------------------------------
+   9. Cart button in header — pulsing add-to-cart feedback
+   -------------------------------------------------------------------------- */
+@keyframes sf-cart-pulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
+
+.sf-header__cart-btn.is-pulsing .sf-cart-badge {
+  animation: sf-cart-pulse 0.4s ease-out;
+}
+
+/* --------------------------------------------------------------------------
+   10. Reduced motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .sf-minicart,
+  .sf-minicart-backdrop {
+    transition: none;
+  }
+
+  .sf-minicart__shipping-fill {
+    transition: none;
+  }
+
+  .sf-header__cart-btn.is-pulsing .sf-cart-badge {
+    animation: none;
+  }
+}

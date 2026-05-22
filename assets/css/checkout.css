@@ -1,0 +1,846 @@
+/**
+ * Checkout — Multi-step layout + step indicator
+ * Also used for: cart page step indicator
+ *
+ * @package samurai
+ */
+
+/* ==========================================================================
+   STEP INDICATOR
+   ========================================================================== */
+
+.sf-steps {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0;
+	margin: 0 auto var(--sf-space-8);
+	max-width: 380px;
+	padding: 0 var(--sf-space-4);
+}
+
+.sf-steps__item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 5px;
+	flex-shrink: 0;
+}
+
+.sf-steps__dot {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	border: 2px solid var(--sf-color-border);
+	background: var(--sf-color-background);
+	color: var(--sf-color-muted);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.2s, border-color 0.2s, color 0.2s;
+	flex-shrink: 0;
+}
+
+.sf-steps__item.is-active .sf-steps__dot,
+.sf-steps__item.is-complete .sf-steps__dot {
+	background: var(--sf-color-primary);
+	border-color: var(--sf-color-primary);
+	color: #fff;
+}
+
+.sf-steps__label {
+	font-size: 0.5625rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.07em;
+	color: var(--sf-color-muted);
+	white-space: nowrap;
+	line-height: 1;
+}
+
+.sf-steps__item.is-active .sf-steps__label {
+	color: var(--sf-color-primary);
+}
+
+.sf-steps__item.is-complete .sf-steps__label {
+	color: var(--sf-color-dark);
+}
+
+.sf-steps__line {
+	flex: 1;
+	height: 2px;
+	background: var(--sf-color-border);
+	margin-bottom: 18px; /* align with dot midpoint */
+	min-width: 16px;
+	transition: background 0.2s;
+}
+
+.sf-steps__line.is-passed {
+	background: var(--sf-color-primary);
+}
+
+/* ==========================================================================
+   CHECKOUT PAGE WRAPPER
+   ========================================================================== */
+
+.sf-checkout-page {
+	padding-bottom: 100px; /* room for sticky CTA */
+	min-height: 70vh;
+}
+
+@media (min-width: 768px) {
+	.sf-checkout-page {
+		padding-bottom: 40px;
+	}
+}
+
+.sf-checkout-page__inner {
+	max-width: 560px;
+	margin: 0 auto;
+	padding-top: var(--sf-space-8);
+	padding-bottom: var(--sf-space-10);
+}
+
+/* Small container variant — narrower than sf-container for checkout */
+.sf-container--sm {
+	max-width: 560px;
+	margin: 0 auto;
+	padding-left: var(--sf-space-4);
+	padding-right: var(--sf-space-4);
+}
+
+@media (min-width: 640px) {
+	.sf-container--sm {
+		padding-left: var(--sf-space-6);
+		padding-right: var(--sf-space-6);
+	}
+}
+
+/* Back link */
+.sf-checkout-back-link {
+	display: inline-flex;
+	align-items: center;
+	color: var(--sf-color-muted);
+	text-decoration: none;
+	margin-bottom: var(--sf-space-4);
+	padding: 4px;
+	border-radius: var(--sf-radius-full);
+	transition: color var(--sf-transition);
+}
+
+.sf-checkout-back-link:hover {
+	color: var(--sf-color-primary);
+}
+
+/* Page title */
+.sf-checkout-title {
+	font-family: var(--sf-font-heading);
+	font-weight: 900;
+	font-size: 1.625rem;
+	color: var(--sf-color-dark);
+	text-align: center;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	margin: 0 0 var(--sf-space-6);
+	line-height: 1.1;
+}
+
+/* ==========================================================================
+   PANELS (multi-step)
+   Panel 2 is kept in DOM (so Square/PayPal iframes can initialize) but
+   pushed off-screen via .sf-co-panel--offscreen. JS swaps the class.
+   ========================================================================== */
+
+.sf-co-panel--offscreen {
+	position: absolute !important;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+	pointer-events: none;
+}
+
+/* ==========================================================================
+   SECTIONS
+   ========================================================================== */
+
+.sf-co-section {
+	margin-bottom: var(--sf-space-5);
+}
+
+.sf-co-section__title {
+	font-size: 0.6875rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.09em;
+	color: var(--sf-color-muted);
+	margin: 0 0 var(--sf-space-3);
+	display: flex;
+	align-items: center;
+	gap: var(--sf-space-2);
+	line-height: 1;
+}
+
+.sf-co-optional {
+	font-weight: 400;
+	font-style: italic;
+	text-transform: none;
+	letter-spacing: 0;
+	font-size: 0.625rem;
+}
+
+/* ==========================================================================
+   FIELD OVERRIDES — match the clean single-column layout
+   ========================================================================== */
+
+.sf-co-fields .form-row,
+.sf-co-fields p.form-row {
+	margin: 0 0 var(--sf-space-3);
+	padding: 0;
+}
+
+.sf-co-fields .form-row label,
+.sf-co-fields p.form-row label {
+	display: none; /* use placeholder instead */
+}
+
+.sf-co-fields .input-text,
+.sf-co-fields input[type="text"],
+.sf-co-fields input[type="email"],
+.sf-co-fields input[type="tel"],
+.sf-co-fields input[type="number"],
+.sf-co-fields select {
+	width: 100%;
+	height: 48px;
+	border: 1.5px solid var(--sf-color-border);
+	border-radius: var(--sf-radius-md);
+	padding: 0 14px;
+	font-size: 0.9375rem;
+	font-family: var(--sf-font-body);
+	color: var(--sf-color-text);
+	background: var(--sf-color-background);
+	outline: none;
+	transition: border-color var(--sf-transition), box-shadow var(--sf-transition);
+	-webkit-appearance: none;
+	appearance: none;
+}
+
+.sf-co-fields select {
+	padding-right: 36px;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 12px center;
+	cursor: pointer;
+}
+
+.sf-co-fields .input-text:focus,
+.sf-co-fields input:focus,
+.sf-co-fields select:focus {
+	border-color: var(--sf-color-primary);
+	box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12);
+}
+
+.sf-co-fields .input-text.input-text--error,
+.sf-co-fields .woocommerce-invalid input {
+	border-color: var(--sf-color-error);
+}
+
+/* Two columns for first + last name */
+.sf-co-fields .form-row-first,
+.sf-co-fields .form-row-last {
+	width: 48%;
+	display: inline-block;
+	vertical-align: top;
+}
+
+.sf-co-fields .form-row-first {
+	margin-right: 4%;
+}
+
+/* City / State / ZIP — three columns on one row */
+.sf-co-fields-inline {
+	display: grid;
+	grid-template-columns: 2fr 1fr 1fr;
+	gap: var(--sf-space-3);
+	margin-bottom: var(--sf-space-3);
+}
+
+.sf-co-fields-inline .form-row {
+	margin-bottom: 0;
+}
+
+/* On very small screens: city spans full width, state + zip share a row */
+@media (max-width: 420px) {
+	.sf-co-fields-inline {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.sf-co-fields-inline .form-row:first-child {
+		grid-column: 1 / -1;
+	}
+}
+
+/* Order notes textarea */
+.sf-co-section textarea.input-text,
+.sf-co-section .woocommerce-additional-fields textarea {
+	width: 100%;
+	min-height: 80px;
+	border: 1.5px solid var(--sf-color-border);
+	border-radius: var(--sf-radius-md);
+	padding: 12px 14px;
+	font-size: 0.9375rem;
+	font-family: var(--sf-font-body);
+	color: var(--sf-color-text);
+	background: var(--sf-color-background);
+	resize: vertical;
+	outline: none;
+	transition: border-color var(--sf-transition);
+}
+
+.sf-co-section textarea.input-text:focus {
+	border-color: var(--sf-color-primary);
+	box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12);
+}
+
+/* WC inline validation error */
+.sf-co-fields .woocommerce-error,
+.sf-co-section .woocommerce-error {
+	font-size: 0.75rem;
+	color: var(--sf-color-error);
+	margin-top: 4px;
+	display: block;
+}
+
+/* Inline field validation message */
+.sf-field-error {
+	display: block;
+	font-size: 0.75rem;
+	color: var(--sf-color-error, #e2292b);
+	margin-top: 4px;
+}
+
+/* ==========================================================================
+   DELIVERY METHOD — styled radio cards (panel 1 only)
+   Scoped to .sf-co-shipping so the duplicate #shipping_method that WC
+   renders inside the order-review table (panel 2) is unaffected.
+   ========================================================================== */
+
+.sf-co-shipping .woocommerce-shipping-fields,
+.sf-co-shipping .woocommerce-shipping-totals {
+	display: none;
+}
+
+.sf-co-shipping #ship-to-different-address {
+	display: none;
+}
+
+.sf-co-shipping #shipping_method {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: var(--sf-space-2);
+}
+
+.sf-co-shipping #shipping_method li {
+	position: relative;
+}
+
+/* Hide native radio/hidden input */
+.sf-co-shipping #shipping_method input[type="radio"],
+.sf-co-shipping #shipping_method input[type="hidden"] {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+	pointer-events: none;
+}
+
+/* Card label — use padding-left to make room for the absolute circle */
+.sf-co-shipping #shipping_method label {
+	display: block !important;
+	position: relative;
+	padding: 14px 16px 14px 46px;
+	border: 1.5px solid var(--sf-color-border);
+	border-radius: var(--sf-radius-md);
+	cursor: pointer;
+	background: var(--sf-color-background);
+	transition: border-color var(--sf-transition), background var(--sf-transition);
+	font-size: 0.9375rem;
+	color: var(--sf-color-text);
+	line-height: 1.4;
+	min-height: 52px;
+	box-sizing: border-box;
+}
+
+/* Custom circle — absolutely positioned so it's immune to flex/block fights */
+.sf-co-shipping #shipping_method label::before {
+	content: '';
+	position: absolute;
+	left: 14px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	border: 2px solid var(--sf-color-border);
+	background: #fff;
+	box-sizing: border-box;
+	transition: border-color var(--sf-transition), background var(--sf-transition);
+}
+
+/* Selected card */
+.sf-co-shipping #shipping_method input[type="radio"]:checked + label {
+	border-color: var(--sf-color-primary);
+	background: rgba(192, 57, 43, 0.04);
+}
+
+/* Filled circle on checked */
+.sf-co-shipping #shipping_method input[type="radio"]:checked + label::before {
+	border-color: var(--sf-color-primary);
+	background: radial-gradient(circle, var(--sf-color-primary) 40%, #fff 42%);
+}
+
+.sf-co-shipping #shipping_method label:hover {
+	border-color: var(--sf-color-primary);
+}
+
+/* Price badge */
+.sf-co-shipping #shipping_method .woocommerce-Price-amount,
+.sf-co-shipping #shipping_method .amount {
+	font-family: var(--sf-font-heading);
+	font-weight: 700;
+	font-size: 0.875rem;
+	color: var(--sf-color-primary);
+}
+
+/* ── Order-review shipping (panel 2 summary) ──────────────────────────────
+   WC renders another #shipping_method inside the review table. Show it as a
+   simple plain list — no cards, no circles — since the user already chose a
+   method in panel 1.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* The order-review shipping row now renders as plain text via the
+   review-order.php template override — no #shipping_method radio list
+   appears here, so no extra CSS is needed. */
+
+/* ==========================================================================
+   COUPON area on checkout (reuses cart coupon styles, minor override)
+   ========================================================================== */
+
+.sf-co-coupon-section {
+	border-top: 1px solid var(--sf-color-border);
+	padding-top: var(--sf-space-4);
+}
+
+.sf-co-coupon-toggle {
+	display: flex;
+	align-items: center;
+	gap: var(--sf-space-2);
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	font-size: 0.875rem;
+	color: var(--sf-color-muted);
+	padding: 0;
+	font-family: var(--sf-font-body);
+	transition: color var(--sf-transition);
+	width: 100%;
+	text-align: left;
+}
+
+.sf-co-coupon-toggle:hover {
+	color: var(--sf-color-primary);
+}
+
+.sf-co-coupon-toggle .sf-coupon-toggle__chevron {
+	margin-left: auto;
+	flex-shrink: 0;
+	transition: transform 0.2s ease;
+}
+
+.sf-co-coupon-toggle[aria-expanded="true"] .sf-coupon-toggle__chevron {
+	transform: rotate(180deg);
+}
+
+/* Applied coupon chips ─────────────────────────────────────────────────── */
+
+.sf-co-applied-coupons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--sf-space-2);
+	margin-top: var(--sf-space-3);
+}
+
+.sf-co-applied-coupon {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--sf-space-1);
+	background: rgba(192, 57, 43, 0.08);
+	border: 1px solid rgba(192, 57, 43, 0.25);
+	border-radius: 9999px;
+	padding: 4px 10px 4px 12px;
+	font-size: 0.8125rem;
+	font-family: var(--sf-font-body);
+}
+
+.sf-co-applied-coupon__code {
+	font-weight: 700;
+	color: var(--sf-color-primary);
+	letter-spacing: 0.04em;
+}
+
+.sf-co-applied-coupon__discount {
+	color: var(--sf-color-muted);
+	font-size: 0.75rem;
+}
+
+.sf-co-applied-coupon__remove {
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	padding: 0 0 0 4px;
+	font-size: 1rem;
+	line-height: 1;
+	color: var(--sf-color-muted);
+	transition: color var(--sf-transition);
+}
+
+.sf-co-applied-coupon__remove:hover {
+	color: var(--sf-color-primary);
+}
+
+/* ==========================================================================
+   STICKY CTA — Continue to Payment (panel 1)
+   ========================================================================== */
+
+.sf-co-sticky-cta {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: var(--sf-color-background);
+	border-top: 1px solid var(--sf-color-border);
+	padding: var(--sf-space-3) var(--sf-space-4);
+	z-index: 40;
+}
+
+@media (min-width: 768px) {
+	.sf-co-sticky-cta {
+		position: static;
+		border-top: none;
+		padding: 0;
+		margin-top: var(--sf-space-5);
+		background: transparent;
+	}
+}
+
+.sf-co-cta-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--sf-space-2);
+	width: 100%;
+	padding: 1rem var(--sf-space-5);
+	background: var(--sf-color-primary);
+	color: #fff;
+	font-family: var(--sf-font-heading);
+	font-weight: 700;
+	font-size: 0.9375rem;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	border: none;
+	border-radius: var(--sf-radius-md);
+	cursor: pointer;
+	transition: background var(--sf-transition), box-shadow var(--sf-transition), transform var(--sf-transition);
+	box-shadow: 0 4px 14px rgba(192, 57, 43, 0.3);
+}
+
+.sf-co-cta-btn:hover {
+	background: #a93226;
+	box-shadow: 0 6px 20px rgba(192, 57, 43, 0.4);
+	transform: translateY(-1px);
+}
+
+.sf-co-cta-btn:active {
+	transform: translateY(0);
+}
+
+/* Disabled state while validating */
+.sf-co-cta-btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+	transform: none;
+}
+
+/* ==========================================================================
+   BACK BUTTON (panel 2)
+   ========================================================================== */
+
+.sf-co-back-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--sf-space-1);
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	font-size: 0.8125rem;
+	color: var(--sf-color-muted);
+	padding: var(--sf-space-3) 0;
+	font-family: var(--sf-font-body);
+	transition: color var(--sf-transition);
+}
+
+.sf-co-back-btn:hover {
+	color: var(--sf-color-primary);
+}
+
+/* ==========================================================================
+   ORDER SUMMARY TOGGLE (panel 2)
+   ========================================================================== */
+
+.sf-co-summary {
+	border: 1.5px solid var(--sf-color-border);
+	border-radius: var(--sf-radius-md);
+	margin-bottom: var(--sf-space-5);
+	overflow: hidden;
+}
+
+.sf-co-summary__toggle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	padding: 14px 16px;
+	background: var(--sf-color-surface);
+	border: none;
+	cursor: pointer;
+	font-size: 0.875rem;
+	color: var(--sf-color-text);
+	font-family: var(--sf-font-body);
+	gap: var(--sf-space-2);
+	text-align: left;
+}
+
+.sf-co-summary__left {
+	display: flex;
+	align-items: center;
+	gap: var(--sf-space-2);
+	color: var(--sf-color-muted);
+}
+
+.sf-co-summary__left .sf-coupon-toggle__chevron {
+	transition: transform 0.2s ease;
+}
+
+.sf-co-summary__toggle[aria-expanded="true"] .sf-coupon-toggle__chevron {
+	transform: rotate(180deg);
+}
+
+.sf-co-summary__total {
+	font-family: var(--sf-font-heading);
+	font-weight: 700;
+	font-size: 1rem;
+	color: var(--sf-color-dark);
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.sf-co-summary__body {
+	display: none;
+	border-top: 1px solid var(--sf-color-border);
+	padding: var(--sf-space-4);
+}
+
+.sf-co-summary__body[aria-hidden="false"],
+.sf-co-summary__body.is-open {
+	display: block;
+}
+
+/* WC order review table inside summary */
+.sf-co-summary__body .woocommerce-checkout-review-order-table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 0.8125rem;
+}
+
+.sf-co-summary__body .woocommerce-checkout-review-order-table td,
+.sf-co-summary__body .woocommerce-checkout-review-order-table th {
+	padding: 6px 0;
+	border: none;
+	text-align: left;
+}
+
+.sf-co-summary__body .woocommerce-checkout-review-order-table .product-total {
+	text-align: right;
+}
+
+.sf-co-summary__body .woocommerce-checkout-review-order-table tfoot tr:last-child {
+	font-weight: 700;
+	font-size: 0.9375rem;
+}
+
+.sf-co-summary__body .woocommerce-checkout-review-order-table tfoot .order-total td,
+.sf-co-summary__body .woocommerce-checkout-review-order-table tfoot .order-total th {
+	color: var(--sf-color-primary);
+}
+
+/* ==========================================================================
+   PAYMENT SECTION — WC overrides for clean look
+   ========================================================================== */
+
+.sf-co-section #payment {
+	background: transparent;
+	border-radius: 0;
+	padding: 0;
+}
+
+.sf-co-section #payment .payment_methods {
+	padding: 0;
+	margin: 0 0 var(--sf-space-4);
+	list-style: none;
+	border: none;
+}
+
+.sf-co-section #payment .payment_methods li {
+	border: 1.5px solid var(--sf-color-border);
+	border-radius: var(--sf-radius-md);
+	margin-bottom: var(--sf-space-2);
+	overflow: hidden;
+	position: relative;
+}
+
+/* Hide native radio — we draw our own circle via ::before */
+.sf-co-section #payment .payment_methods li.wc_payment_method > input[type="radio"] {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+	pointer-events: none;
+}
+
+/* Label: block with left padding for the absolute circle */
+.sf-co-section #payment .payment_methods li.wc_payment_method > label {
+	display: block !important;
+	position: relative;
+	padding: 14px 16px 14px 46px;
+	cursor: pointer;
+	font-size: 0.9375rem;
+	color: var(--sf-color-text);
+	line-height: 2;      /* tall enough for 20px card-brand images inline */
+	transition: background var(--sf-transition);
+	box-sizing: border-box;
+}
+
+/* Custom circle — absolutely positioned */
+.sf-co-section #payment .payment_methods li.wc_payment_method > label::before {
+	content: '';
+	position: absolute;
+	left: 14px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	border: 2px solid var(--sf-color-border);
+	background: #fff;
+	box-sizing: border-box;
+	transition: border-color var(--sf-transition), background var(--sf-transition);
+}
+
+/* Card-brand images must be inline so they flow with the gateway name text */
+.sf-co-section #payment .payment_methods li.wc_payment_method > label img {
+	display: inline-block;
+	height: 20px;
+	width: auto;
+	vertical-align: middle;
+	margin-left: 4px;
+}
+
+/* Checked state */
+.sf-co-section #payment .payment_methods li.wc_payment_method > input[type="radio"]:checked + label {
+	background: rgba(192, 57, 43, 0.04);
+}
+
+.sf-co-section #payment .payment_methods li.wc_payment_method > input[type="radio"]:checked + label::before {
+	border-color: var(--sf-color-primary);
+	background: radial-gradient(circle, var(--sf-color-primary) 40%, #fff 42%);
+}
+
+/* Selected card border */
+.sf-co-section #payment .payment_methods li.wc_payment_method:has(> input[type="radio"]:checked) {
+	border-color: var(--sf-color-primary);
+}
+
+.sf-co-section #payment .payment_methods .payment_box {
+	padding: var(--sf-space-4) 16px;
+	border-top: 1px solid var(--sf-color-border);
+	background: var(--sf-color-surface);
+	font-size: 0.875rem;
+}
+
+.sf-co-section #payment .place-order {
+	padding: 0;
+}
+
+/* Place Order button — inherits WC class, override styling */
+.sf-co-section #payment #place_order {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	padding: 1rem var(--sf-space-5);
+	background: var(--sf-color-primary);
+	color: #fff;
+	font-family: var(--sf-font-heading);
+	font-weight: 700;
+	font-size: 0.9375rem;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	border: none;
+	border-radius: var(--sf-radius-md);
+	cursor: pointer;
+	transition: background var(--sf-transition), box-shadow var(--sf-transition);
+	box-shadow: 0 4px 14px rgba(192, 57, 43, 0.3);
+	margin-top: var(--sf-space-4);
+}
+
+.sf-co-section #payment #place_order:hover {
+	background: #a93226;
+	box-shadow: 0 6px 20px rgba(192, 57, 43, 0.4);
+}
+
+/* Terms & conditions */
+.sf-co-section .woocommerce-terms-and-conditions-wrapper {
+	font-size: 0.75rem;
+	color: var(--sf-color-muted);
+	margin-bottom: var(--sf-space-3);
+}
+
+/* ==========================================================================
+   COMPACT CART — STEP INDICATOR ON CART PAGE
+   (cart.php step indicator reuses .sf-steps — no extra styles needed,
+    only minimal vertical spacing override)
+   ========================================================================== */
+
+.sf-cart-page .sf-steps {
+	margin-bottom: var(--sf-space-6);
+}
+
+/* ==========================================================================
+   REDUCED MOTION
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+	.sf-co-cta-btn,
+	.sf-steps__dot,
+	.sf-steps__line {
+		transition: none;
+		transform: none !important;
+	}
+}

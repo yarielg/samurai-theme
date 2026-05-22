@@ -1,0 +1,419 @@
+/* ==========================================================================
+   Product Card — reusable across homepage sections and shop archive
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Card shell
+   -------------------------------------------------------------------------- */
+.sf-product-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--sf-color-card);
+  border-radius: var(--sf-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--sf-shadow);
+  transition: box-shadow var(--sf-transition-slow), transform var(--sf-transition-slow);
+}
+
+.sf-product-card:hover {
+  box-shadow: var(--sf-shadow-lg);
+  transform: translateY(-3px);
+}
+
+/* --------------------------------------------------------------------------
+   Media / Image
+   -------------------------------------------------------------------------- */
+.sf-product-card__media-link {
+  display: block;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.sf-product-card__media {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--sf-color-surface);
+}
+
+.sf-product-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.45s ease;
+  display: block;
+}
+
+.sf-product-card:hover .sf-product-card__img {
+  transform: scale(1.05);
+}
+
+/* --------------------------------------------------------------------------
+   Badges (sale / fire-deal / oos)
+   -------------------------------------------------------------------------- */
+.sf-product-card__badges {
+  position: absolute;
+  top: var(--sf-space-2);
+  left: var(--sf-space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-1);
+  z-index: 3;
+}
+
+.sf-product-card__oos-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 3;
+}
+
+/* --------------------------------------------------------------------------
+   Hover panel — gallery swatches + effect tags
+   -------------------------------------------------------------------------- */
+.sf-product-card__hover-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 4;
+  padding: var(--sf-space-3) var(--sf-space-3) var(--sf-space-2);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.6) 60%,
+    transparent 100%
+  );
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-2);
+  transform: translateY(100%);
+  opacity: 0;
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.32s ease;
+  pointer-events: none;
+}
+
+.sf-product-card:hover .sf-product-card__hover-panel {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Gallery color swatches */
+.sf-card-swatches {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.sf-card-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--sf-radius);
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.sf-card-swatch img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sf-card-swatch:hover {
+  border-color: #fff;
+  transform: scale(1.12);
+}
+
+/* Effect tag pills */
+.sf-card-effects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.sf-card-effect-tag {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 var(--sf-space-2);
+  background: rgba(243, 156, 18, 0.22);
+  border: 1px solid rgba(243, 156, 18, 0.45);
+  border-radius: var(--sf-radius-full);
+  font-size: 10px;
+  font-weight: var(--sf-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sf-color-secondary);
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   Body
+   -------------------------------------------------------------------------- */
+.sf-product-card__body {
+  flex: 1;
+  padding: var(--sf-space-3) var(--sf-space-3) var(--sf-space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-1);
+}
+
+/* Brand label */
+.sf-product-card__brand {
+  min-height: 1.2em;
+}
+
+.sf-product-card__brand-link {
+  font-size: var(--sf-text-xs);
+  font-weight: var(--sf-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--sf-color-muted);
+  text-decoration: none;
+  transition: color var(--sf-transition);
+}
+
+.sf-product-card__brand-link:hover {
+  color: var(--sf-color-primary);
+}
+
+.sf-product-card__brand-placeholder {
+  font-size: var(--sf-text-xs);
+  font-weight: var(--sf-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--sf-color-border);
+}
+
+/* Title */
+.sf-product-card__title {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-sm);
+  line-height: 1.35;
+  color: var(--sf-color-dark);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .sf-product-card__title {
+    font-size: var(--sf-text-base);
+  }
+}
+
+.sf-product-card__title a {
+  color: inherit;
+  text-decoration: none;
+  transition: color var(--sf-transition);
+}
+
+.sf-product-card__title a:hover {
+  color: var(--sf-color-primary);
+}
+
+/* Price */
+.sf-product-card__price {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-base);
+  color: var(--sf-color-dark);
+  line-height: 1;
+  margin-top: var(--sf-space-1);
+}
+
+@media (min-width: 768px) {
+  .sf-product-card__price {
+    font-size: var(--sf-text-lg);
+  }
+}
+
+.sf-product-card__price ins {
+  color: var(--sf-color-primary);
+  text-decoration: none;
+}
+
+.sf-product-card__price del {
+  color: var(--sf-color-muted);
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-normal);
+  margin-right: var(--sf-space-1);
+}
+
+.sf-product-card__price .woocommerce-Price-amount {
+  font-weight: var(--sf-weight-bold);
+}
+
+/* --------------------------------------------------------------------------
+   Footer / Add-to-cart
+   -------------------------------------------------------------------------- */
+.sf-product-card__footer {
+  padding: 0 var(--sf-space-3) var(--sf-space-3);
+  flex-shrink: 0;
+}
+
+.sf-product-card__atc {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sf-space-2);
+  padding: var(--sf-space-2) var(--sf-space-3);
+  background: #111;
+  color: #fff;
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--sf-radius);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease, opacity 0.2s ease, color 0.2s ease;
+  line-height: 1;
+}
+
+.sf-product-card__atc:hover {
+  background: #1f1f1f;
+  color: #fff;
+  text-decoration: none;
+}
+
+.sf-product-card__atc:focus-visible {
+  outline: 2px solid var(--sf-color-primary);
+  outline-offset: 2px;
+}
+
+/* Cart icon inside button */
+.sf-atc-icon {
+  flex-shrink: 0;
+  transition: opacity 0.2s ease;
+}
+
+.sf-atc-label {
+  transition: opacity 0.2s ease;
+}
+
+/* ── Loading state ─────────────────────────────────────────────────────── */
+.sf-product-card__atc.loading {
+  pointer-events: none;
+}
+
+.sf-product-card__atc.loading .sf-atc-icon,
+.sf-product-card__atc.loading .sf-atc-label {
+  opacity: 0;
+}
+
+/* Spinner via ::before */
+.sf-product-card__atc.loading::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: sf-atc-spin 0.65s linear infinite;
+}
+
+@keyframes sf-atc-spin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ── Added / checkmark state ───────────────────────────────────────────── */
+.sf-product-card__atc.added {
+  background: #111;
+}
+
+.sf-product-card__atc.added .sf-atc-icon,
+.sf-product-card__atc.added .sf-atc-label {
+  opacity: 0;
+}
+
+/* Checkmark via ::after */
+.sf-product-card__atc.added::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 9px;
+  height: 15px;
+  border-right: 2.5px solid #fff;
+  border-bottom: 2.5px solid #fff;
+  transform: translate(-50%, -65%) rotate(45deg);
+  animation: sf-atc-check-in 0.3s ease forwards;
+}
+
+@keyframes sf-atc-check-in {
+  from { opacity: 0; transform: translate(-50%, -45%) rotate(45deg) scale(0.6); }
+  to   { opacity: 1; transform: translate(-50%, -65%) rotate(45deg) scale(1); }
+}
+
+/* ── Out-of-stock state ────────────────────────────────────────────────── */
+.sf-product-card__atc--oos {
+  background: var(--sf-color-surface);
+  color: var(--sf-color-muted);
+  border: 1px solid var(--sf-color-border);
+  cursor: default;
+}
+
+.sf-product-card__atc--oos:hover {
+  background: var(--sf-color-surface);
+  color: var(--sf-color-muted);
+}
+
+/* Hide WooCommerce's injected "View cart" link after the button */
+.sf-product-card__footer .added_to_cart,
+.sf-product-card__footer a.added_to_cart {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   Fire deals card variant
+   -------------------------------------------------------------------------- */
+.sf-product-card--deals {
+  border: 1px solid rgba(255, 107, 43, 0.15);
+}
+
+/* --------------------------------------------------------------------------
+   Product grid layout
+   -------------------------------------------------------------------------- */
+.sf-product-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--sf-space-4);
+}
+
+@media (min-width: 600px) {
+  .sf-product-grid--3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 768px) {
+  .sf-product-grid--4 { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .sf-product-grid--4 { grid-template-columns: repeat(4, 1fr); }
+  .sf-product-grid--3 { grid-template-columns: repeat(3, 1fr); }
+}

@@ -1,0 +1,375 @@
+/* ==========================================================================
+   Mega Menu — full-width panel below the fixed header
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Nav item wrapper + trigger chevron
+   -------------------------------------------------------------------------- */
+.sf-primary-nav > li.menu-item--mega > a::after {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid currentColor;
+  margin-left: 6px;
+  vertical-align: middle;
+  opacity: 0.55;
+  transition: transform var(--sf-transition), opacity var(--sf-transition);
+}
+
+.sf-primary-nav > li.menu-item--mega.is-open > a::after {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+/* Suppress the standard WP sub-menu list */
+.sf-primary-nav > li.menu-item--mega > ul.sub-menu {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+   2. Panel shell
+
+   position:fixed so it is positioned against the viewport — not against the
+   <li> (which has position:relative and is only ~80px wide).
+
+   top: 68px  (default header height)
+   top: 80px  (desktop ≥1024px — actual .sf-header__inner height)
+
+   z-index: calc(var(--sf-z-header) + 1) = 101
+   The panel lives inside .sf-header (z-index:100, stacking context).
+   Within that context, 101 puts it above everything else in the header.
+   The backdrop uses z-index:99 (one below the header's 100) so it can never
+   block clicks on the panel.
+   -------------------------------------------------------------------------- */
+.sf-mega-panel {
+  position: fixed;
+  top: 68px;
+  left: 0;
+  right: 0;
+  overflow: hidden; /* clip decorative burst to panel bounds */
+  z-index: calc(var(--sf-z-header) + 1); /* 101 — above header (100) */
+
+  background:
+    radial-gradient(ellipse 70% 120% at 50% -5%, rgba(192, 57, 43, 0.22) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 80% at 50% -5%, rgba(255, 107, 43, 0.14) 0%, transparent 45%),
+    linear-gradient(180deg, #1c1412 0%, #111 55%, #0d0d0d 100%);
+
+  border-top: 2px solid var(--sf-color-accent);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 4px 0 rgba(26, 188, 156, 0.15);
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    visibility 0.22s ease;
+}
+
+@media (min-width: 1024px) {
+  .sf-mega-panel {
+    top: 80px;
+  }
+}
+
+.sf-mega-panel.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Firework burst decoration — bottom-right, behind content */
+.sf-mega-panel::after {
+  content: '';
+  position: absolute;
+  right: -80px;
+  bottom: -60px;
+  width: 360px;
+  height: 360px;
+  background: url('../images/firework-pattern.png') no-repeat center / contain;
+  filter: invert(1) sepia(1) saturate(3) hue-rotate(330deg) brightness(3);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 0;
+  animation: sf-burst-panel 18s ease-in-out infinite 1s;
+}
+
+@keyframes sf-burst-panel {
+  0%, 100% { transform: scale(1)    rotate(0deg); opacity: 0.11; }
+  40%       { transform: scale(1.05) rotate(5deg); opacity: 0.16; }
+  75%       { transform: scale(0.97) rotate(-4deg); opacity: 0.08; }
+}
+
+.sf-mega-panel__inner {
+  padding-top: var(--sf-space-8);
+  padding-bottom: var(--sf-space-6);
+  position: relative;
+  z-index: 1; /* above the ::after burst */
+}
+
+/* --------------------------------------------------------------------------
+   3. Column grid — auto-fit so all columns share the full width equally
+   -------------------------------------------------------------------------- */
+.sf-mega-panel__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--sf-space-6) var(--sf-space-8);
+  margin-bottom: var(--sf-space-6);
+}
+
+/* --------------------------------------------------------------------------
+   4. Individual column
+   -------------------------------------------------------------------------- */
+.sf-mega-panel__col {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Column label — white with accent underline */
+.sf-mega-panel__col-label {
+  display: block;
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #fff;
+  text-decoration: none;
+  padding-bottom: var(--sf-space-3);
+  margin-bottom: var(--sf-space-3);
+  border-bottom: 2px solid var(--sf-color-accent);
+  transition: color var(--sf-transition);
+}
+
+a.sf-mega-panel__col-label:hover {
+  color: var(--sf-color-accent);
+}
+
+/* --------------------------------------------------------------------------
+   5. Term link list
+   -------------------------------------------------------------------------- */
+.sf-mega-panel__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   6. Term links — fire-ember glow on hover
+   -------------------------------------------------------------------------- */
+.sf-mega-panel__link {
+  display: block;
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-medium);
+  color: rgba(255, 255, 255, 0.78);
+  text-decoration: none;
+  padding: 6px 10px;
+  line-height: 1.4;
+  border-radius: 5px;
+  border-left: 2px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition:
+    color 0.18s ease,
+    background 0.18s ease,
+    border-color 0.18s ease,
+    padding-left 0.18s ease,
+    text-shadow 0.18s ease;
+}
+
+.sf-mega-panel__link:hover {
+  color: #fff;
+  padding-left: 14px;
+  border-left-color: #ff6b2b;
+  background: linear-gradient(90deg, rgba(255, 90, 0, 0.18) 0%, rgba(255, 90, 0, 0.04) 100%);
+  text-shadow: 0 0 10px rgba(255, 130, 50, 0.4);
+}
+
+/* Links that carry a term thumbnail — flex layout */
+.sf-mega-panel__link--has-img {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: normal;
+}
+
+.sf-mega-panel__link--has-img span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Term thumbnail */
+.sf-mega-panel__term-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  object-fit: cover;
+  flex-shrink: 0;
+  opacity: 0.85;
+  transition: opacity 0.15s ease;
+}
+
+.sf-mega-panel__link--has-img:hover .sf-mega-panel__term-img {
+  opacity: 1;
+}
+
+/* "All X →" per column */
+.sf-mega-panel__see-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--sf-text-xs);
+  font-weight: var(--sf-weight-semibold);
+  color: var(--sf-color-accent);
+  text-decoration: none;
+  margin-top: var(--sf-space-3);
+  opacity: 0.8;
+  letter-spacing: 0.04em;
+  transition: opacity var(--sf-transition);
+}
+
+.sf-mega-panel__see-all:hover {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   7. Footer bar — browse all + quick links
+   -------------------------------------------------------------------------- */
+.sf-mega-panel__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--sf-space-8);
+  padding: var(--sf-space-4) 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+}
+
+.sf-mega-panel__footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sf-space-2);
+  font-family: var(--sf-font-heading);
+  font-size: var(--sf-text-xs);
+  font-weight: var(--sf-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  transition: color var(--sf-transition);
+}
+
+.sf-mega-panel__footer-link:hover {
+  color: #fff;
+}
+
+.sf-mega-panel__footer-link svg {
+  color: var(--sf-color-accent);
+  flex-shrink: 0;
+}
+
+/* --------------------------------------------------------------------------
+   8. Backdrop — dims page content below the open panel.
+
+   MUST be z-index:99 (one below .sf-header's 100). The mega panel lives
+   inside .sf-header's stacking context, so if the backdrop were at 100
+   and came later in the DOM it would paint over the entire header tree
+   and block all clicks on panel links.
+   -------------------------------------------------------------------------- */
+.sf-mega-backdrop {
+  position: fixed;
+  inset: 0;
+  top: 68px;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 99; /* below .sf-header (100) so it can't block panel clicks */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.22s ease, visibility 0.22s ease;
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  .sf-mega-backdrop {
+    top: 80px;
+  }
+}
+
+.sf-mega-backdrop.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* --------------------------------------------------------------------------
+   9. Desktop only
+   -------------------------------------------------------------------------- */
+@media (max-width: 1023px) {
+  .sf-mega-panel,
+  .sf-mega-backdrop {
+    display: none !important;
+  }
+
+  .sf-primary-nav > li.menu-item--mega > a::after {
+    display: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   10. Mobile nav section headers (used by samurai_mobile_nav_html)
+   -------------------------------------------------------------------------- */
+.sf-mobile-nav-section {
+  margin-bottom: var(--sf-space-4);
+}
+
+.sf-mobile-nav-section:last-child {
+  margin-bottom: 0;
+}
+
+.sf-mobile-nav-section-label {
+  display: block;
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.38);
+  text-decoration: none;
+  padding: var(--sf-space-2) 0 var(--sf-space-1);
+  margin-bottom: var(--sf-space-1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: color var(--sf-transition);
+}
+
+a.sf-mobile-nav-section-label:hover {
+  color: var(--sf-color-accent);
+}
+
+/* --------------------------------------------------------------------------
+   11. Reduced motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .sf-mega-panel,
+  .sf-mega-backdrop {
+    transition: none;
+  }
+
+  .sf-mega-panel__link {
+    transition: none;
+  }
+
+  .sf-mega-panel::after {
+    animation: none;
+    opacity: 0.09;
+  }
+}

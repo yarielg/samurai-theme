@@ -1,0 +1,999 @@
+/* ==========================================================================
+   Header — single-row, fixed, transparent over hero / solid on other pages
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Responsive visibility
+   -------------------------------------------------------------------------- */
+
+/* Hamburger: mobile only */
+@media (min-width: 1024px) {
+  .sf-header__hamburger { display: none !important; }
+}
+
+/* Primary nav: desktop only */
+.sf-header__nav { display: none !important; }
+@media (min-width: 1024px) {
+  .sf-header__nav { display: flex !important; }
+}
+
+/* Account icon: desktop only */
+.sf-header__account { display: none !important; }
+@media (min-width: 1024px) {
+  .sf-header__account { display: flex !important; }
+}
+
+/* --------------------------------------------------------------------------
+   1. Header shell — fixed, transparent over hero; solid on other pages
+   -------------------------------------------------------------------------- */
+.sf-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--sf-z-header);
+  background: transparent;
+  transition: background 0.35s ease, box-shadow 0.35s ease;
+}
+
+/*
+ * Subtle dark gradient at the very top so white text/icons are always
+ * readable against any hero image or bright background.
+ * Only active on pages that have a hero (body.sf-has-hero).
+ */
+.sf-has-hero .sf-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.52) 0%, rgba(0,0,0,0) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Scrolled state — triggered by JS adding .is-scrolled */
+.sf-header.is-scrolled {
+  background: rgba(17, 17, 17, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 24px rgb(0 0 0 / 0.3);
+}
+
+/* Non-hero pages — solid brand header from page load */
+body:not(.sf-has-hero) .sf-header {
+  background: var(--sf-header-nav-bg, var(--sf-color-primary));
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.15);
+}
+
+/* --------------------------------------------------------------------------
+   2. Single inner row
+   -------------------------------------------------------------------------- */
+.sf-header__inner {
+  position: relative;
+  z-index: 1; /* sit above the ::before gradient */
+  display: flex;
+  align-items: center;
+  height: 68px;
+  gap: var(--sf-space-3);
+  /* Explicit longhand overrides padding-inline shorthand from .sf-container,
+     ensuring the cart button has the same right offset as the hamburger has left. */
+  padding-left: var(--sf-container-pad);
+  padding-right: var(--sf-container-pad);
+}
+
+@media (min-width: 1024px) {
+  .sf-header__inner {
+    height: 80px;
+    gap: var(--sf-space-5);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. Logo
+   -------------------------------------------------------------------------- */
+.sf-header__logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  /* Center on mobile (hamburger pushes it right of center) */
+  flex: 1;
+  justify-content: center;
+}
+
+@media (min-width: 1024px) {
+  .sf-header__logo {
+    flex: 0 0 auto;
+    justify-content: flex-start;
+  }
+}
+
+/* Logo image constraints */
+.sf-header__logo .custom-logo-link img,
+.sf-header__logo img {
+  max-height: 40px;
+  width: auto;
+  display: block;
+  transition: filter 0.35s ease, opacity 0.35s ease;
+}
+
+@media (min-width: 1024px) {
+  .sf-header__logo .custom-logo-link img,
+  .sf-header__logo img {
+    max-height: 48px;
+  }
+}
+
+/* Logo over hero — no filter needed (logo already works on dark backgrounds) */
+
+.sf-header__site-name {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-black);
+  font-size: var(--sf-text-xl);
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
+   4. Primary navigation (desktop, centered)
+   -------------------------------------------------------------------------- */
+.sf-header__nav {
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Reset WordPress menu output */
+.sf-primary-nav {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  height: 80px;
+}
+
+.sf-primary-nav > li {
+  position: relative;
+  height: 80px;
+  display: flex;
+  align-items: center;
+}
+
+/* Nav links — always white (transparent and solid header both have dark bg) */
+.sf-primary-nav > li > a {
+  display: flex;
+  align-items: center;
+  height: 80px;
+  padding: 0 var(--sf-space-4);
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease, background 0.2s ease;
+  line-height: 1;
+}
+
+.sf-primary-nav > li > a:hover,
+.sf-primary-nav > li.current-menu-item > a,
+.sf-primary-nav > li.current-menu-ancestor > a,
+.sf-primary-nav > li.current-menu-parent > a {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Fire Deals nav item — add CSS class "fire-deals-item" in WP Admin → Menus */
+.sf-primary-nav > li.fire-deals-item > a {
+  color: var(--sf-color-fire);
+  font-weight: var(--sf-weight-black);
+}
+
+.sf-primary-nav > li.fire-deals-item > a:hover {
+  color: #fff;
+  background: var(--sf-color-fire);
+}
+
+/* Sub-menu dropdown */
+.sf-primary-nav .sub-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: calc(var(--sf-z-header) + 5);
+  min-width: 200px;
+  list-style: none;
+  margin: 0;
+  padding: var(--sf-space-2) 0;
+  background: #fff;
+  border: 1px solid var(--sf-color-border);
+  border-top: 2px solid var(--sf-color-primary);
+  border-radius: 0 0 var(--sf-radius) var(--sf-radius);
+  box-shadow: var(--sf-shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity var(--sf-transition), transform var(--sf-transition);
+}
+
+.sf-primary-nav > li:hover > .sub-menu,
+.sf-primary-nav > li:focus-within > .sub-menu {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.sf-primary-nav .sub-menu li a {
+  display: block;
+  padding: var(--sf-space-2) var(--sf-space-4);
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-medium);
+  color: var(--sf-color-dark);
+  text-decoration: none;
+  transition: background var(--sf-transition), color var(--sf-transition);
+  white-space: nowrap;
+}
+
+.sf-primary-nav .sub-menu li a:hover,
+.sf-primary-nav .sub-menu li.current-menu-item > a {
+  background: var(--sf-color-surface);
+  color: var(--sf-color-primary);
+}
+
+/* --------------------------------------------------------------------------
+   5. Action icons (right side) — always white on header
+   -------------------------------------------------------------------------- */
+.sf-header__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sf-space-1);
+  flex-shrink: 0;
+}
+
+.sf-header__icon-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  border-radius: var(--sf-radius);
+  text-decoration: none;
+  padding: 0;
+  transition: color var(--sf-transition), background var(--sf-transition);
+  flex-shrink: 0;
+}
+
+.sf-header__icon-btn:hover {
+  color: var(--sf-color-secondary);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.sf-header__icon-btn:focus-visible {
+  outline: 3px solid var(--sf-color-accent);
+  outline-offset: 2px;
+}
+
+.sf-header__hamburger {
+  order: -1; /* always leftmost on mobile */
+}
+
+/* Cart badge */
+.sf-cart-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: 10px;
+  line-height: 18px;
+  text-align: center;
+  background: var(--sf-color-secondary);
+  color: var(--sf-color-dark);
+  border-radius: var(--sf-radius-full);
+  pointer-events: none;
+}
+
+.sf-btn-cart-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: var(--sf-radius-full);
+  font-size: 11px;
+  font-weight: var(--sf-weight-bold);
+  margin-left: var(--sf-space-1);
+}
+
+/* --------------------------------------------------------------------------
+   7. Simple dropdowns (Brands, More)
+   -------------------------------------------------------------------------- */
+.sf-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: calc(var(--sf-z-header) + 5);
+  min-width: 180px;
+  background: #fff;
+  border: 1px solid var(--sf-color-border);
+  border-top: 2px solid var(--sf-color-primary);
+  border-radius: 0 0 var(--sf-radius) var(--sf-radius);
+  box-shadow: var(--sf-shadow-lg);
+  padding: var(--sf-space-2) 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity var(--sf-transition), transform var(--sf-transition);
+}
+
+.sf-dropdown.is-open,
+.js-dropdown-parent:hover > .sf-dropdown,
+.js-dropdown-parent:focus-within > .sf-dropdown {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Right-aligned dropdown */
+.sf-dropdown--right {
+  left: auto;
+  right: 0;
+}
+
+/* Brands dropdown — two-column grid */
+.sf-dropdown--brands {
+  min-width: 360px;
+  padding: var(--sf-space-3);
+}
+
+.sf-dropdown__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.sf-dropdown__item {
+  display: block;
+  padding: var(--sf-space-2) var(--sf-space-3);
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-medium);
+  color: var(--sf-color-dark);
+  text-decoration: none;
+  border-radius: var(--sf-radius-sm);
+  transition: background var(--sf-transition), color var(--sf-transition);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sf-dropdown__item:hover {
+  background: var(--sf-color-surface);
+  color: var(--sf-color-primary);
+}
+
+.sf-dropdown--brands .sf-dropdown__item {
+  padding: var(--sf-space-2);
+  font-size: var(--sf-text-xs);
+}
+
+.sf-dropdown__view-all {
+  display: block;
+  padding: var(--sf-space-2) var(--sf-space-3);
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--sf-color-primary);
+  text-decoration: none;
+  border-top: 1px solid var(--sf-color-border);
+  margin-top: var(--sf-space-2);
+  padding-top: var(--sf-space-3);
+  transition: color var(--sf-transition);
+}
+
+.sf-dropdown__view-all:hover {
+  color: var(--sf-color-accent);
+}
+
+/* --------------------------------------------------------------------------
+   8. Mega menu
+   -------------------------------------------------------------------------- */
+.sf-mega-menu {
+  position: fixed;
+  top: var(--sf-header-height, 116px);
+  left: 0;
+  right: 0;
+  z-index: calc(var(--sf-z-header) + 4);
+  background: #fff;
+  border-top: 2px solid var(--sf-color-primary);
+  box-shadow: var(--sf-shadow-lg);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sf-mega-menu.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.sf-mega-menu__inner {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  padding: var(--sf-space-6) 0;
+}
+
+.sf-mega-menu__col {
+  padding: 0 var(--sf-space-5);
+  border-right: 1px solid var(--sf-color-border);
+}
+
+.sf-mega-menu__col:last-child {
+  border-right: none;
+}
+
+.sf-mega-menu__label {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sf-color-muted);
+  margin: 0 0 var(--sf-space-3);
+  padding-bottom: var(--sf-space-2);
+  border-bottom: 1px solid var(--sf-color-border);
+}
+
+.sf-mega-menu__list {
+  list-style: none;
+  margin: 0 0 var(--sf-space-3);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sf-mega-menu__list a {
+  display: block;
+  padding: var(--sf-space-2) var(--sf-space-2);
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-medium);
+  color: var(--sf-color-dark);
+  text-decoration: none;
+  border-radius: var(--sf-radius-sm);
+  transition: background var(--sf-transition), color var(--sf-transition);
+}
+
+.sf-mega-menu__list a:hover {
+  background: var(--sf-color-surface);
+  color: var(--sf-color-primary);
+}
+
+.sf-mega-menu__view-all {
+  display: inline-block;
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--sf-color-primary);
+  text-decoration: none;
+  transition: color var(--sf-transition);
+}
+
+.sf-mega-menu__view-all:hover {
+  color: var(--sf-color-accent);
+}
+
+.sf-mega-menu__view-all--deals {
+  color: var(--sf-color-fire);
+}
+
+.sf-mega-menu__deals-cta {
+  margin-top: var(--sf-space-5);
+  padding-top: var(--sf-space-4);
+  border-top: 1px solid var(--sf-color-border);
+}
+
+.sf-mega-menu__deal-link {
+  color: var(--sf-color-fire) !important;
+  font-weight: var(--sf-weight-bold) !important;
+}
+
+/* Backdrop for mega menu */
+.sf-mega-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--sf-z-header) + 3);
+  background: rgb(0 0 0 / 0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--sf-transition-slow);
+}
+
+.sf-mega-backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* --------------------------------------------------------------------------
+   9. Mobile drawer
+   -------------------------------------------------------------------------- */
+.sf-mobile-menu {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: var(--sf-z-drawer);
+  width: min(340px, 90vw);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateX(-100%);
+  transition: transform var(--sf-transition-slow);
+  box-shadow: var(--sf-shadow-lg);
+}
+
+.sf-mobile-menu.is-open {
+  transform: translateX(0);
+}
+
+/* Drawer header */
+.sf-mobile-menu__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sf-space-3) var(--sf-space-4);
+  border-bottom: 1px solid var(--sf-color-border);
+  background: var(--sf-header-nav-bg, var(--sf-color-primary));
+  flex-shrink: 0;
+}
+
+.sf-mobile-menu__logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.sf-mobile-menu__logo img,
+.sf-mobile-menu__logo .custom-logo {
+  max-height: 32px;
+  width: auto;
+}
+
+.sf-mobile-menu__logo span {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-black);
+  font-size: var(--sf-text-lg);
+  color: #fff;
+}
+
+.sf-mobile-menu__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  border-radius: var(--sf-radius);
+  padding: 0;
+  flex-shrink: 0;
+  transition: background var(--sf-transition);
+}
+
+.sf-mobile-menu__close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* Drawer search */
+.sf-mobile-menu__search {
+  padding: var(--sf-space-3) var(--sf-space-4);
+  border-bottom: 1px solid var(--sf-color-border);
+  flex-shrink: 0;
+}
+
+.sf-mobile-search-wrap {
+  display: flex;
+  align-items: center;
+  background: var(--sf-color-surface);
+  border: 1px solid var(--sf-color-border);
+  border-radius: var(--sf-radius-full);
+  overflow: hidden;
+}
+
+.sf-mobile-search-wrap input[type="search"] {
+  flex: 1;
+  padding: var(--sf-space-2) var(--sf-space-3);
+  font-size: var(--sf-text-sm);
+  background: transparent;
+  border: none;
+  outline: none;
+  width: auto;
+}
+
+.sf-mobile-search-wrap button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--sf-color-primary);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Quick links */
+.sf-mobile-menu__quick {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sf-space-2);
+  padding: var(--sf-space-3) var(--sf-space-4);
+  border-bottom: 1px solid var(--sf-color-border);
+  flex-shrink: 0;
+}
+
+.sf-mobile-quick-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sf-space-2) var(--sf-space-3);
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sf-color-dark);
+  background: var(--sf-color-surface);
+  border: 1px solid var(--sf-color-border);
+  border-radius: var(--sf-radius);
+  text-decoration: none;
+  text-align: center;
+  transition: background var(--sf-transition), color var(--sf-transition), border-color var(--sf-transition);
+}
+
+.sf-mobile-quick-link:hover {
+  background: var(--sf-color-primary);
+  color: #fff;
+  border-color: var(--sf-color-primary);
+}
+
+.sf-mobile-quick-link--deals {
+  background: var(--sf-color-fire);
+  color: #fff;
+  border-color: var(--sf-color-fire);
+}
+
+.sf-mobile-quick-link--deals:hover {
+  background: #e5551c;
+  border-color: #e5551c;
+  color: #fff;
+}
+
+/* wp_nav_menu() output inside .sf-mobile-menu__quick */
+.sf-mobile-quick-nav {
+  display: contents; /* let the grid container take over */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sf-mobile-quick-nav li {
+  display: contents; /* each <li> becomes a direct grid child via its <a> */
+}
+
+.sf-mobile-quick-nav li a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sf-space-2) var(--sf-space-3);
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sf-color-text);
+  background: var(--sf-color-surface);
+  border: 1px solid var(--sf-color-border);
+  border-radius: var(--sf-radius);
+  text-decoration: none;
+  text-align: center;
+  transition: background var(--sf-transition), color var(--sf-transition), border-color var(--sf-transition);
+}
+
+.sf-mobile-quick-nav li a:hover {
+  background: var(--sf-color-primary);
+  color: #fff;
+  border-color: var(--sf-color-primary);
+}
+
+/* "fire-deals-item" class on the menu item → orange quick link */
+.sf-mobile-quick-nav li.fire-deals-item a {
+  background: var(--sf-color-fire);
+  color: #fff;
+  border-color: var(--sf-color-fire);
+}
+
+.sf-mobile-quick-nav li.fire-deals-item a:hover {
+  background: #e5551c;
+  border-color: #e5551c;
+}
+
+/* Scrollable nav */
+.sf-mobile-menu__nav {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Accordion */
+.sf-mobile-accordion {
+  border-bottom: 1px solid var(--sf-color-border);
+}
+
+.sf-mobile-accordion__trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--sf-space-4) var(--sf-space-4);
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--sf-color-dark);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--sf-transition), color var(--sf-transition);
+}
+
+.sf-mobile-accordion__trigger:hover {
+  background: var(--sf-color-surface);
+  color: var(--sf-color-primary);
+}
+
+.sf-mobile-accordion__trigger[aria-expanded="true"] {
+  color: var(--sf-color-primary);
+  background: var(--sf-color-surface);
+}
+
+.sf-mobile-accordion__icon {
+  display: flex;
+  flex-shrink: 0;
+  transition: transform var(--sf-transition);
+  color: var(--sf-color-muted);
+}
+
+.sf-mobile-accordion__trigger[aria-expanded="true"] .sf-mobile-accordion__icon {
+  transform: rotate(180deg);
+  color: var(--sf-color-primary);
+}
+
+.sf-mobile-accordion__panel {
+  display: none;
+  padding: var(--sf-space-1) 0 var(--sf-space-2);
+  background: var(--sf-color-surface);
+}
+
+.sf-mobile-accordion__panel.is-open {
+  display: block;
+}
+
+.sf-mobile-nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sf-space-2) var(--sf-space-5);
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-medium);
+  color: var(--sf-color-dark);
+  text-decoration: none;
+  transition: color var(--sf-transition), background var(--sf-transition);
+}
+
+.sf-mobile-nav-link:hover {
+  color: var(--sf-color-primary);
+  background: rgba(192, 57, 43, 0.04);
+}
+
+.sf-mobile-nav-link--all {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--sf-color-primary);
+  margin-top: var(--sf-space-1);
+  padding-top: var(--sf-space-2);
+  border-top: 1px solid var(--sf-color-border);
+}
+
+.sf-mobile-nav-count {
+  font-size: var(--sf-text-xs);
+  color: var(--sf-color-muted);
+  font-weight: var(--sf-weight-normal);
+}
+
+/* Drawer footer */
+.sf-mobile-menu__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-2);
+  padding: var(--sf-space-4);
+  border-top: 1px solid var(--sf-color-border);
+  background: var(--sf-color-surface);
+  flex-shrink: 0;
+}
+
+.sf-mobile-menu__footer .sf-btn {
+  gap: var(--sf-space-2);
+}
+
+/* Backdrop */
+.sf-mobile-menu__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--sf-z-drawer) - 1);
+  background: rgb(0 0 0 / 0.5);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--sf-transition-slow);
+}
+
+.sf-mobile-menu__backdrop.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* --------------------------------------------------------------------------
+   10. Search modal (mobile full-width bar)
+   -------------------------------------------------------------------------- */
+.sf-search-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--sf-z-modal);
+  background: var(--sf-header-nav-bg, var(--sf-color-primary));
+  padding: var(--sf-space-3) 0;
+  transform: translateY(-110%);
+  transition: transform var(--sf-transition-slow);
+  box-shadow: var(--sf-shadow-lg);
+}
+
+.sf-search-modal.is-open {
+  transform: translateY(0);
+}
+
+.sf-search-modal__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--sf-space-3);
+}
+
+.sf-search-modal__form {
+  flex: 1;
+  display: flex;
+  gap: var(--sf-space-2);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: var(--sf-radius-full);
+  overflow: hidden;
+}
+
+.sf-search-modal__form input[type="search"] {
+  flex: 1;
+  padding: var(--sf-space-3) var(--sf-space-4);
+  background: transparent;
+  border: none;
+  font-size: var(--sf-text-base);
+  color: #fff;
+  outline: none;
+}
+
+.sf-search-modal__form input[type="search"]::placeholder {
+  color: rgba(255,255,255,0.5);
+}
+
+.sf-search-modal__form .sf-btn {
+  border-radius: 0;
+  padding: var(--sf-space-2) var(--sf-space-4);
+}
+
+.sf-search-modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  border: none;
+  border-radius: var(--sf-radius);
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background var(--sf-transition);
+}
+
+.sf-search-modal__close:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* --------------------------------------------------------------------------
+   11. Header height + nav background CSS variables
+        --sf-header-nav-bg: overridable via ACF Options → Brand & Colors
+        --sf-header-height: used for hero content offset + scroll-padding-top
+   -------------------------------------------------------------------------- */
+:root {
+  --sf-header-height:  68px;
+  --sf-header-nav-bg:  var(--sf-color-primary); /* solid header bg + mobile drawer */
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --sf-header-height: 80px;
+  }
+}
+
+/* Non-hero pages: push page content below the fixed header */
+body:not(.sf-has-hero) {
+  padding-top: var(--sf-header-height);
+}
+
+/* Smooth anchor scroll lands below the header */
+html {
+  scroll-padding-top: calc(var(--sf-header-height) + 8px);
+}
+
+/* --------------------------------------------------------------------------
+   12. WordPress admin bar — offset fixed header so it sits below the bar
+   -------------------------------------------------------------------------- */
+body.admin-bar .sf-header {
+  top: 32px;
+}
+
+/* Admin bar is 46px tall on small screens (WP breakpoint: 782px) */
+@media screen and (max-width: 782px) {
+  body.admin-bar .sf-header {
+    top: 46px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   13. Hero page layout fixes
+       — remove .sf-main default padding so the hero section fills flush
+       — remove any stray top margin on the hero element itself
+   -------------------------------------------------------------------------- */
+.sf-has-hero .sf-main,
+.sf-main--home {
+  padding-top: 0;
+  padding-bottom: 0;
+  min-height: 0;
+}
+
+.sf-has-hero .sf-hero,
+.sf-main--home .sf-hero {
+  margin: 0;
+}

@@ -1,0 +1,692 @@
+/* ==========================================================================
+   Components — buttons, badges, notices, cards, forms
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Buttons
+   -------------------------------------------------------------------------- */
+.sf-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-decoration: none;
+  border: 2px solid transparent;
+  border-radius: var(--sf-radius);
+  cursor: pointer;
+  transition:
+    background var(--sf-transition),
+    color var(--sf-transition),
+    border-color var(--sf-transition),
+    box-shadow var(--sf-transition),
+    transform var(--sf-transition);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.sf-btn:focus-visible {
+  outline: 3px solid var(--sf-color-accent);
+  outline-offset: 3px;
+}
+
+.sf-btn:active {
+  transform: scale(0.98);
+}
+
+/* Primary */
+.sf-btn--primary {
+  background: var(--sf-color-primary);
+  color: #fff;
+  border-color: var(--sf-color-primary);
+}
+
+.sf-btn--primary:hover {
+  background: #a93226;
+  border-color: #a93226;
+  color: #fff;
+  box-shadow: 0 4px 12px rgb(192 57 43 / 0.35);
+}
+
+/* Secondary (gold) */
+.sf-btn--secondary {
+  background: var(--sf-color-secondary);
+  color: var(--sf-color-dark);
+  border-color: var(--sf-color-secondary);
+}
+
+.sf-btn--secondary:hover {
+  background: #d68910;
+  border-color: #d68910;
+  color: var(--sf-color-dark);
+}
+
+/* Accent (aqua) */
+.sf-btn--accent {
+  background: var(--sf-color-accent);
+  color: var(--sf-color-dark);
+  border-color: var(--sf-color-accent);
+}
+
+.sf-btn--accent:hover {
+  background: #17a589;
+  color: var(--sf-color-dark);
+}
+
+/* Outline */
+.sf-btn--outline {
+  background: transparent;
+  color: var(--sf-color-primary);
+  border-color: var(--sf-color-primary);
+}
+
+.sf-btn--outline:hover {
+  background: var(--sf-color-primary);
+  color: #fff;
+}
+
+/* Ghost / subtle */
+.sf-btn--ghost {
+  background: var(--sf-color-surface);
+  color: var(--sf-color-dark);
+  border-color: var(--sf-color-border);
+}
+
+.sf-btn--ghost:hover {
+  background: var(--sf-color-border);
+  color: var(--sf-color-dark);
+}
+
+/* Dark */
+.sf-btn--dark {
+  background: var(--sf-color-dark);
+  color: #fff;
+  border-color: var(--sf-color-dark);
+}
+
+.sf-btn--dark:hover {
+  background: #111;
+  border-color: #111;
+  color: #fff;
+}
+
+/* Disabled / sold out state */
+.sf-btn--disabled,
+.sf-btn:disabled,
+.sf-btn[disabled] {
+  background: var(--sf-color-border);
+  color: var(--sf-color-muted);
+  border-color: var(--sf-color-border);
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Sizes */
+.sf-btn--sm {
+  padding: 0.5rem 1rem;
+  font-size: var(--sf-text-xs);
+}
+
+.sf-btn--lg {
+  padding: 1rem 2rem;
+  font-size: var(--sf-text-base);
+  border-radius: var(--sf-radius-md);
+}
+
+.sf-btn--xl {
+  padding: 1.125rem 2.25rem;
+  font-size: var(--sf-text-lg);
+  border-radius: var(--sf-radius-md);
+}
+
+/* Block / full width */
+.sf-btn--block {
+  width: 100%;
+  display: flex;
+}
+
+/* Icon-only */
+.sf-btn--icon {
+  padding: 0.625rem;
+  border-radius: var(--sf-radius);
+}
+
+/* Loading state */
+.sf-btn--loading {
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.sf-btn--loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: sf-spin 0.7s linear infinite;
+}
+
+@keyframes sf-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --------------------------------------------------------------------------
+   2. Badges / pills
+   -------------------------------------------------------------------------- */
+.sf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2em 0.65em;
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  border-radius: var(--sf-radius-full);
+  white-space: nowrap;
+}
+
+/* Sale (red) */
+.sf-badge--sale {
+  background: var(--sf-color-primary);
+  color: #fff;
+}
+
+/* Fire deal (orange) */
+.sf-badge--fire {
+  background: var(--sf-color-fire);
+  color: #fff;
+}
+
+/* New (aqua) */
+.sf-badge--new {
+  background: var(--sf-color-accent);
+  color: var(--sf-color-dark);
+}
+
+/* Featured (gold) */
+.sf-badge--featured {
+  background: var(--sf-color-secondary);
+  color: var(--sf-color-dark);
+}
+
+/* Out of stock (gray) */
+.sf-badge--oos {
+  background: var(--sf-color-border);
+  color: var(--sf-color-muted);
+}
+
+/* Low stock (warning amber) */
+.sf-badge--low-stock {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* In stock (green) */
+.sf-badge--in-stock {
+  background: #dcfce7;
+  color: #166534;
+}
+
+/* Outline variant */
+.sf-badge--outline {
+  background: transparent;
+  border: 1px solid currentColor;
+  color: var(--sf-color-muted);
+}
+
+/* Brand badge */
+.sf-badge--brand {
+  background: var(--sf-color-dark);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   3. Notices / alerts
+   -------------------------------------------------------------------------- */
+.sf-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sf-space-3);
+  padding: var(--sf-space-4) var(--sf-space-5);
+  border-radius: var(--sf-radius);
+  border-left: 4px solid transparent;
+  font-size: var(--sf-text-sm);
+  line-height: 1.5;
+  margin-bottom: var(--sf-space-4);
+}
+
+.sf-notice p {
+  margin: 0;
+}
+
+.sf-notice--success {
+  background: #f0fdf4;
+  border-color: var(--sf-color-success);
+  color: #166534;
+}
+
+.sf-notice--error {
+  background: #fef2f2;
+  border-color: var(--sf-color-error);
+  color: #991b1b;
+}
+
+.sf-notice--warning {
+  background: #fffbeb;
+  border-color: var(--sf-color-warning);
+  color: #92400e;
+}
+
+.sf-notice--info {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1e40af;
+}
+
+/* --------------------------------------------------------------------------
+   4. Form inputs
+   -------------------------------------------------------------------------- */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="url"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+textarea,
+select {
+  width: 100%;
+  padding: var(--sf-space-3) var(--sf-space-4);
+  font-family: var(--sf-font-body);
+  font-size: var(--sf-text-base);
+  color: var(--sf-color-text);
+  background: var(--sf-color-background);
+  border: 1px solid var(--sf-color-border);
+  border-radius: var(--sf-radius);
+  outline: none;
+  transition: border-color var(--sf-transition), box-shadow var(--sf-transition);
+  line-height: 1.5;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="tel"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--sf-color-accent);
+  box-shadow: 0 0 0 3px rgb(26 188 156 / 0.2);
+}
+
+input[type="text"]::placeholder,
+input[type="email"]::placeholder,
+input[type="tel"]::placeholder,
+textarea::placeholder {
+  color: var(--sf-color-muted);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B6B6B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+label {
+  display: block;
+  font-weight: var(--sf-weight-medium);
+  font-size: var(--sf-text-sm);
+  color: var(--sf-color-dark);
+  margin-bottom: var(--sf-space-1);
+}
+
+.sf-field-group {
+  margin-bottom: var(--sf-space-5);
+}
+
+.sf-field-error {
+  color: var(--sf-color-error);
+  font-size: var(--sf-text-xs);
+  margin-top: var(--sf-space-1);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  width: auto;
+  accent-color: var(--sf-color-primary);
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   5. Cards (base — product cards extended in woocommerce.css)
+   -------------------------------------------------------------------------- */
+.sf-card {
+  background: var(--sf-color-card);
+  border: 1px solid var(--sf-color-border);
+  border-radius: var(--sf-radius-md);
+  overflow: hidden;
+  transition: box-shadow var(--sf-transition), transform var(--sf-transition);
+}
+
+.sf-card:hover {
+  box-shadow: var(--sf-shadow-md);
+  transform: translateY(-2px);
+}
+
+.sf-card__image {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  background: var(--sf-color-surface);
+}
+
+.sf-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--sf-transition-slow);
+}
+
+.sf-card:hover .sf-card__image img {
+  transform: scale(1.04);
+}
+
+.sf-card__badges {
+  position: absolute;
+  top: var(--sf-space-2);
+  left: var(--sf-space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-1);
+  z-index: 2;
+}
+
+.sf-card__body {
+  padding: var(--sf-space-4);
+}
+
+.sf-card__title {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-sm);
+  color: var(--sf-color-dark);
+  margin-bottom: var(--sf-space-2);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sf-card__price {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-lg);
+  color: var(--sf-color-primary);
+  margin-bottom: var(--sf-space-3);
+}
+
+.sf-card__footer {
+  padding: 0 var(--sf-space-4) var(--sf-space-4);
+}
+
+/* --------------------------------------------------------------------------
+   6. Taxonomy / category cards
+   -------------------------------------------------------------------------- */
+.sf-tax-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: var(--sf-space-5) var(--sf-space-4);
+  background: var(--sf-color-card);
+  border: 1px solid var(--sf-color-border);
+  border-radius: var(--sf-radius-md);
+  text-decoration: none;
+  color: var(--sf-color-dark);
+  transition: box-shadow var(--sf-transition), transform var(--sf-transition), border-color var(--sf-transition);
+}
+
+.sf-tax-card:hover {
+  box-shadow: var(--sf-shadow-md);
+  transform: translateY(-2px);
+  border-color: var(--sf-color-primary);
+  color: var(--sf-color-primary);
+}
+
+.sf-tax-card__image {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--sf-radius);
+  margin-bottom: var(--sf-space-3);
+}
+
+.sf-tax-card__name {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: var(--sf-space-1);
+}
+
+.sf-tax-card__count {
+  font-size: var(--sf-text-xs);
+  color: var(--sf-color-muted);
+}
+
+/* --------------------------------------------------------------------------
+   7. Loading spinner
+   -------------------------------------------------------------------------- */
+.sf-spinner {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--sf-color-border);
+  border-top-color: var(--sf-color-primary);
+  border-radius: 50%;
+  animation: sf-spin 0.7s linear infinite;
+}
+
+/* --------------------------------------------------------------------------
+   8. Quantity stepper (WooCommerce extension)
+   -------------------------------------------------------------------------- */
+.sf-qty {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--sf-color-border);
+  border-radius: var(--sf-radius);
+  overflow: hidden;
+}
+
+.sf-qty__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--sf-color-surface);
+  border: none;
+  cursor: pointer;
+  font-size: var(--sf-text-lg);
+  font-weight: var(--sf-weight-bold);
+  color: var(--sf-color-dark);
+  transition: background var(--sf-transition);
+  flex-shrink: 0;
+}
+
+.sf-qty__btn:hover {
+  background: var(--sf-color-border);
+}
+
+.sf-qty__input {
+  width: 56px;
+  height: 40px;
+  text-align: center;
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-base);
+  border: none;
+  border-left: 1px solid var(--sf-color-border);
+  border-right: 1px solid var(--sf-color-border);
+  border-radius: 0;
+  padding: 0;
+}
+
+.sf-qty__input:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--sf-color-accent);
+}
+
+/* --------------------------------------------------------------------------
+   9. Free shipping progress bar
+   -------------------------------------------------------------------------- */
+.sf-shipping-bar {
+  background: var(--sf-color-surface);
+  border-radius: var(--sf-radius);
+  overflow: hidden;
+  margin: var(--sf-space-4) 0;
+}
+
+.sf-shipping-bar__label {
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-medium);
+  padding: var(--sf-space-2) var(--sf-space-3);
+  color: var(--sf-color-dark);
+}
+
+.sf-shipping-bar__track {
+  height: 6px;
+  background: var(--sf-color-border);
+}
+
+.sf-shipping-bar__fill {
+  height: 100%;
+  background: var(--sf-color-success);
+  border-radius: var(--sf-radius-full);
+  transition: width 0.5s ease;
+}
+
+.sf-shipping-bar__fill--complete {
+  background: var(--sf-color-accent);
+}
+
+/* --------------------------------------------------------------------------
+   10. Responsive grid utility
+   -------------------------------------------------------------------------- */
+.sf-grid {
+  display: grid;
+  gap: var(--sf-space-4);
+}
+
+.sf-grid--2 { grid-template-columns: repeat(2, 1fr); }
+.sf-grid--3 { grid-template-columns: repeat(3, 1fr); }
+.sf-grid--4 { grid-template-columns: repeat(4, 1fr); }
+
+@media (min-width: 768px) {
+  .sf-grid { gap: var(--sf-space-5); }
+}
+
+/* Product grid specifics — 2 cols mobile → 3 tablet → 4-5 desktop */
+.sf-product-grid {
+  display: grid;
+  gap: var(--sf-space-4);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 768px) {
+  .sf-product-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--sf-space-5);
+  }
+}
+
+@media (min-width: 1280px) {
+  .sf-product-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   11. Section headings
+   -------------------------------------------------------------------------- */
+.sf-section-heading {
+  margin-bottom: var(--sf-space-6);
+}
+
+.sf-section-heading__eyebrow {
+  font-family: var(--sf-font-sub);
+  font-weight: var(--sf-weight-semibold);
+  font-size: var(--sf-text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--sf-color-accent);
+  display: block;
+  margin-bottom: var(--sf-space-1);
+}
+
+.sf-section-heading__title {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-black);
+  font-size: clamp(var(--sf-text-2xl), 4vw, var(--sf-text-4xl));
+  margin-bottom: 0;
+}
+
+.sf-section-heading__desc {
+  color: var(--sf-color-muted);
+  margin-top: var(--sf-space-2);
+}
+
+/* --------------------------------------------------------------------------
+   12. Trust strip
+   -------------------------------------------------------------------------- */
+.sf-trust-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--sf-space-6);
+  padding: var(--sf-space-6) 0;
+  border-top: 1px solid var(--sf-color-border);
+  border-bottom: 1px solid var(--sf-color-border);
+}
+
+.sf-trust-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sf-space-2);
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-medium);
+  color: var(--sf-color-dark);
+}
+
+.sf-trust-item svg {
+  color: var(--sf-color-accent);
+  flex-shrink: 0;
+}

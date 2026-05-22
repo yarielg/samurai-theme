@@ -1,0 +1,171 @@
+/**
+ * Floating toast notifications — replaces WC inline notices site-wide.
+ *
+ * @package samurai
+ */
+
+/* Seeds: rendered by WC notice templates, hidden immediately, harvested by JS */
+.sf-notice-seed {
+	display: none !important;
+}
+
+/* ==========================================================================
+   TOAST CONTAINER
+   ========================================================================== */
+
+#sf-toast-container {
+	position: fixed;
+	top: var(--sf-space-5);
+	right: var(--sf-space-4);
+	z-index: 10000;
+	display: flex;
+	flex-direction: column;
+	gap: var(--sf-space-3);
+	width: 340px;
+	max-width: calc(100vw - 2 * var(--sf-space-4));
+	pointer-events: none;
+}
+
+/* ==========================================================================
+   INDIVIDUAL TOAST
+   ========================================================================== */
+
+.sf-toast {
+	position: relative;
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 14px 40px 14px 18px;
+	border-radius: var(--sf-radius-md);
+	background: #fff;
+	box-shadow:
+		0 4px 20px rgba(0, 0, 0, 0.12),
+		0 1px 4px  rgba(0, 0, 0, 0.07);
+	pointer-events: auto;
+	overflow: hidden;
+
+	/* entry state */
+	opacity: 0;
+	transform: translateX(16px);
+	transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.sf-toast.is-visible {
+	opacity: 1;
+	transform: translateX(0);
+}
+
+.sf-toast.is-leaving {
+	opacity: 0;
+	transform: translateX(16px);
+	transition-duration: 0.18s;
+}
+
+/* Colored left accent stripe */
+.sf-toast::before {
+	content: '';
+	position: absolute;
+	inset: 0 auto 0 0;
+	width: 4px;
+}
+
+.sf-toast--success::before { background: #27ae60; }
+.sf-toast--error::before   { background: var(--sf-color-primary, #c0392b); }
+.sf-toast--notice::before  { background: #2980b9; }
+
+/* ==========================================================================
+   TOAST PARTS
+   ========================================================================== */
+
+.sf-toast__icon {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	padding-top: 1px;
+}
+
+.sf-toast--success .sf-toast__icon { color: #27ae60; }
+.sf-toast--error   .sf-toast__icon { color: var(--sf-color-primary, #c0392b); }
+.sf-toast--notice  .sf-toast__icon { color: #2980b9; }
+
+.sf-toast__msg {
+	flex: 1;
+	min-width: 0;
+	font-size: 0.875rem;
+	font-family: var(--sf-font-body);
+	color: var(--sf-color-text);
+	line-height: 1.45;
+}
+
+.sf-toast__msg a {
+	color: var(--sf-color-primary);
+	text-decoration: underline;
+}
+
+.sf-toast__close {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	background: transparent;
+	border: none;
+	cursor: pointer;
+	font-size: 1.125rem;
+	line-height: 1;
+	color: var(--sf-color-muted);
+	padding: 2px 4px;
+	border-radius: 4px;
+	transition: color var(--sf-transition), background var(--sf-transition);
+}
+
+.sf-toast__close:hover {
+	color: var(--sf-color-text);
+	background: rgba(0, 0, 0, 0.05);
+}
+
+/* Auto-dismiss progress bar */
+.sf-toast__bar {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 3px;
+	transform-origin: left;
+	opacity: 0.2;
+	animation: sf-toast-shrink linear forwards;
+}
+
+.sf-toast--success .sf-toast__bar { background: #27ae60; }
+.sf-toast--error   .sf-toast__bar { background: var(--sf-color-primary, #c0392b); }
+.sf-toast--notice  .sf-toast__bar { background: #2980b9; }
+
+@keyframes sf-toast-shrink {
+	from { transform: scaleX(1); }
+	to   { transform: scaleX(0); }
+}
+
+/* ==========================================================================
+   MOBILE — slide up from bottom
+   ========================================================================== */
+
+@media (max-width: 480px) {
+	#sf-toast-container {
+		top: auto;
+		bottom: 76px; /* clear the sticky cart / checkout bar */
+		right: var(--sf-space-3);
+		left: var(--sf-space-3);
+		width: auto;
+		max-width: none;
+	}
+
+	.sf-toast {
+		transform: translateY(10px);
+	}
+
+	.sf-toast.is-visible {
+		transform: translateY(0);
+	}
+
+	.sf-toast.is-leaving {
+		transform: translateY(10px);
+	}
+}
