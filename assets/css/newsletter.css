@@ -1,0 +1,298 @@
+/* ==========================================================================
+   Newsletter sign-up section
+   Two-column: copy (left) + form panel (right). Stacked on mobile.
+   ========================================================================== */
+
+.sf-newsletter-section {
+  background: #0a0a0a;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle red-fire glow behind the copy column */
+.sf-newsletter-section::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  left: -5%;
+  width: 55%;
+  height: 160%;
+  background: radial-gradient(ellipse, rgba(192, 57, 43, 0.14) 0%, transparent 68%);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Layout
+   -------------------------------------------------------------------------- */
+.sf-newsletter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-10);
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 900px) {
+  .sf-newsletter {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--sf-space-16);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Copy column
+   -------------------------------------------------------------------------- */
+.sf-newsletter__copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.sf-newsletter__eyebrow {
+  font-family: var(--sf-font-sub);
+  font-weight: var(--sf-weight-semibold);
+  font-size: var(--sf-text-sm);
+  color: var(--sf-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 var(--sf-space-3);
+}
+
+.sf-newsletter__heading {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-black);
+  font-size: var(--sf-text-3xl);
+  color: #fff;
+  margin: 0 0 var(--sf-space-4);
+  line-height: 1.1;
+}
+
+@media (min-width: 768px) {
+  .sf-newsletter__heading {
+    font-size: var(--sf-text-4xl);
+  }
+}
+
+.sf-newsletter__subline {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: var(--sf-text-base);
+  line-height: 1.65;
+  margin: 0 0 var(--sf-space-6);
+  max-width: 420px;
+}
+
+/* Benefit list */
+.sf-newsletter__perks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-3);
+}
+
+.sf-newsletter__perks li {
+  display: flex;
+  align-items: center;
+  gap: var(--sf-space-3);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: var(--sf-text-sm);
+}
+
+/* Gold check badge */
+.sf-newsletter__perks li::before {
+  content: '';
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--sf-radius-full);
+  background-color: var(--sf-color-secondary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%23111' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 11px;
+}
+
+/* --------------------------------------------------------------------------
+   Form panel
+   -------------------------------------------------------------------------- */
+.sf-newsletter__panel {
+  flex: 0 0 420px;
+  max-width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   Form
+   -------------------------------------------------------------------------- */
+.sf-newsletter__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-4);
+}
+
+.sf-newsletter__field {
+  position: relative;
+}
+
+/* Use element+class selector (0,1,1) to beat the global input[type] rule (0,1,1)
+   in components.css — source order wins the tie since newsletter.css loads later. */
+input.sf-newsletter__input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--sf-radius);
+  color: #fff;
+  font-family: var(--sf-font-body);
+  font-size: var(--sf-text-base);
+  padding: var(--sf-space-4) var(--sf-space-5);
+  transition: border-color var(--sf-transition), background var(--sf-transition);
+  outline: none;
+}
+
+input.sf-newsletter__input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+input.sf-newsletter__input:focus {
+  border-color: var(--sf-color-secondary);
+  background: rgba(255, 255, 255, 0.10);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Terms checkbox
+   -------------------------------------------------------------------------- */
+.sf-newsletter__terms-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sf-space-3);
+  cursor: pointer;
+  user-select: none;
+}
+
+.sf-newsletter__checkbox {
+  display: inline-block;
+  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  margin-top: 1px;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--sf-radius-sm);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  position: relative;
+  transition: border-color var(--sf-transition), background var(--sf-transition);
+}
+
+.sf-newsletter__checkbox:checked {
+  background: var(--sf-color-secondary);
+  border-color: var(--sf-color-secondary);
+}
+
+.sf-newsletter__checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 4px;
+  width: 5px;
+  height: 9px;
+  border: 2px solid #111;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+.sf-newsletter__checkbox:focus-visible {
+  outline: 2px solid var(--sf-color-secondary);
+  outline-offset: 2px;
+}
+
+.sf-newsletter__terms-text {
+  font-size: var(--sf-text-sm);
+  color: rgba(255, 255, 255, 0.52);
+  line-height: 1.55;
+}
+
+.sf-newsletter__terms-text a {
+  color: var(--sf-color-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity var(--sf-transition);
+}
+
+.sf-newsletter__terms-text a:hover {
+  opacity: 0.8;
+}
+
+/* --------------------------------------------------------------------------
+   Submit button
+   -------------------------------------------------------------------------- */
+.sf-newsletter__btn {
+  width: 100%;
+  justify-content: center;
+  gap: var(--sf-space-2);
+}
+
+.sf-newsletter__btn[disabled] {
+  opacity: 0.65;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Privacy note
+   -------------------------------------------------------------------------- */
+.sf-newsletter__privacy {
+  font-size: var(--sf-text-xs);
+  color: rgba(255, 255, 255, 0.28);
+  margin: 0;
+  text-align: center;
+}
+
+/* --------------------------------------------------------------------------
+   Success state
+   -------------------------------------------------------------------------- */
+.sf-newsletter__success[hidden] {
+  display: none;
+}
+
+.sf-newsletter__success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--sf-space-3);
+  padding: var(--sf-space-10) 0;
+  color: var(--sf-color-secondary);
+}
+
+.sf-newsletter__success-msg {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  font-size: var(--sf-text-xl);
+  color: #fff;
+  margin: 0;
+}
+
+.sf-newsletter__success-sub {
+  font-size: var(--sf-text-sm);
+  color: rgba(255, 255, 255, 0.52);
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .sf-newsletter__input,
+  .sf-newsletter__checkbox {
+    transition: none;
+  }
+}

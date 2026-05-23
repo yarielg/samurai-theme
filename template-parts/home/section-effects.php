@@ -2,9 +2,9 @@
 /**
  * Homepage — Shop by Effect section.
  *
- * Queries `effect` taxonomy terms and displays them as discovery cards
- * so customers can shop by the kind of firework experience they want.
- * Uses ACF `image` term field when available.
+ * Queries `effect` taxonomy terms and displays them as a bento grid of
+ * discovery cards. Uses ACF `image_2` as the primary display image with
+ * `image` as fallback.
  *
  * @package samurai
  */
@@ -33,27 +33,36 @@ if ( empty( $sf_effects ) ) {
 		</div>
 
 		<div class="sf-effect-grid">
-			<?php foreach ( $sf_effects as $sf_effect ) :
+			<?php foreach ( $sf_effects as $sf_index => $sf_effect ) :
 				$sf_effect_url  = get_term_link( $sf_effect );
 				$sf_effect_name = $sf_effect->name;
 				$sf_effect_desc = $sf_effect->description;
+				$sf_desc_words  = ( $sf_index === 0 ) ? 14 : 8;
 
-				// ACF image field on the term.
-				$sf_acf_img = function_exists( 'get_field' ) ? get_field( 'image', $sf_effect ) : false;
-				$sf_img_id  = 0;
+				// ACF image fields — image_2 is primary, image is fallback.
+				$sf_acf_img  = function_exists( 'get_field' ) ? get_field( 'image', $sf_effect ) : false;
+				$sf_acf_img2 = function_exists( 'get_field' ) ? get_field( 'image_2', $sf_effect ) : false;
+				$sf_img_id   = 0;
+				$sf_img2_id  = 0;
 				if ( is_array( $sf_acf_img ) ) {
 					$sf_img_id = absint( $sf_acf_img['ID'] ?? 0 );
 				} elseif ( is_numeric( $sf_acf_img ) ) {
 					$sf_img_id = absint( $sf_acf_img );
 				}
+				if ( is_array( $sf_acf_img2 ) ) {
+					$sf_img2_id = absint( $sf_acf_img2['ID'] ?? 0 );
+				} elseif ( is_numeric( $sf_acf_img2 ) ) {
+					$sf_img2_id = absint( $sf_acf_img2 );
+				}
+				$sf_display_img_id = $sf_img2_id ?: $sf_img_id;
 				?>
 			<a href="<?php echo esc_url( $sf_effect_url ); ?>"
 			   class="sf-effect-card"
 			   aria-label="<?php echo esc_attr( sprintf( /* translators: %s: effect name */ __( 'Shop %s fireworks', 'samurai' ), $sf_effect_name ) ); ?>">
 
 				<div class="sf-effect-card__media">
-					<?php if ( $sf_img_id ) : ?>
-						<?php echo wp_get_attachment_image( $sf_img_id, 'samurai-taxonomy', false, [
+					<?php if ( $sf_display_img_id ) : ?>
+						<?php echo wp_get_attachment_image( $sf_display_img_id, 'samurai-taxonomy', false, [
 							'class'   => 'sf-effect-card__img',
 							'loading' => 'lazy',
 							'alt'     => esc_attr( $sf_effect_name ),
@@ -67,7 +76,7 @@ if ( empty( $sf_effects ) ) {
 				<div class="sf-effect-card__info">
 					<span class="sf-effect-card__name"><?php echo esc_html( $sf_effect_name ); ?></span>
 					<?php if ( $sf_effect_desc ) : ?>
-					<span class="sf-effect-card__desc"><?php echo esc_html( wp_trim_words( $sf_effect_desc, 8, '' ) ); ?></span>
+					<span class="sf-effect-card__desc"><?php echo esc_html( wp_trim_words( $sf_effect_desc, $sf_desc_words, '' ) ); ?></span>
 					<?php endif; ?>
 				</div>
 

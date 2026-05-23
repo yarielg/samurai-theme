@@ -24,6 +24,120 @@
 }
 
 /* --------------------------------------------------------------------------
+   Account avatar (logged-in state)
+   -------------------------------------------------------------------------- */
+.sf-header__account-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-bold);
+  color: #fff;
+  letter-spacing: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  user-select: none;
+  width: 32px;
+  height: 32px;
+  font-size: 13px;
+  transition: box-shadow var(--sf-transition);
+}
+
+.sf-header__account:hover .sf-header__account-avatar {
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+}
+
+/* Smaller variant used inside the mobile drawer button */
+.sf-header__account-avatar--sm {
+  width: 26px;
+  height: 26px;
+  font-size: 11px;
+}
+
+/* --------------------------------------------------------------------------
+   Account dropdown wrapper (logged-in state)
+   -------------------------------------------------------------------------- */
+.sf-header__account-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Reuse .sf-dropdown--right but give the account panel its own width */
+.sf-dropdown--account {
+  min-width: 220px;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* User info header */
+.sf-account-menu__head {
+  padding: var(--sf-space-3) var(--sf-space-4);
+  border-bottom: 1px solid var(--sf-color-border, #eee);
+  background: var(--sf-color-surface, #f9fafb);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sf-account-menu__name {
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-semibold);
+  color: var(--sf-color-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sf-account-menu__email {
+  font-size: var(--sf-text-xs);
+  color: var(--sf-color-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Menu items with icon */
+.sf-account-menu__item {
+  display: flex !important;
+  align-items: center;
+  gap: var(--sf-space-2);
+}
+
+.sf-account-menu__item svg {
+  flex-shrink: 0;
+  opacity: 0.55;
+  transition: opacity var(--sf-transition);
+}
+
+.sf-account-menu__item:hover svg {
+  opacity: 1;
+}
+
+/* Divider */
+.sf-account-menu__divider {
+  height: 1px;
+  background: var(--sf-color-border, #eee);
+  margin: var(--sf-space-1) 0;
+}
+
+/* Sign out — red tint */
+.sf-account-menu__signout {
+  color: var(--sf-color-primary, #c0392b) !important;
+}
+
+.sf-account-menu__signout:hover {
+  background: #fff5f5 !important;
+  color: var(--sf-color-primary, #c0392b) !important;
+}
+
+.sf-account-menu__signout svg {
+  opacity: 1;
+  color: var(--sf-color-primary, #c0392b);
+}
+
+/* --------------------------------------------------------------------------
    1. Header shell — fixed, transparent over hero; solid on other pages
    -------------------------------------------------------------------------- */
 .sf-header {
@@ -867,82 +981,7 @@ body:not(.sf-has-hero) .sf-header {
 }
 
 /* --------------------------------------------------------------------------
-   10. Search modal (mobile full-width bar)
-   -------------------------------------------------------------------------- */
-.sf-search-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: var(--sf-z-modal);
-  background: var(--sf-header-nav-bg, var(--sf-color-primary));
-  padding: var(--sf-space-3) 0;
-  transform: translateY(-110%);
-  transition: transform var(--sf-transition-slow);
-  box-shadow: var(--sf-shadow-lg);
-}
-
-.sf-search-modal.is-open {
-  transform: translateY(0);
-}
-
-.sf-search-modal__inner {
-  display: flex;
-  align-items: center;
-  gap: var(--sf-space-3);
-}
-
-.sf-search-modal__form {
-  flex: 1;
-  display: flex;
-  gap: var(--sf-space-2);
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: var(--sf-radius-full);
-  overflow: hidden;
-}
-
-.sf-search-modal__form input[type="search"] {
-  flex: 1;
-  padding: var(--sf-space-3) var(--sf-space-4);
-  background: transparent;
-  border: none;
-  font-size: var(--sf-text-base);
-  color: #fff;
-  outline: none;
-}
-
-.sf-search-modal__form input[type="search"]::placeholder {
-  color: rgba(255,255,255,0.5);
-}
-
-.sf-search-modal__form .sf-btn {
-  border-radius: 0;
-  padding: var(--sf-space-2) var(--sf-space-4);
-}
-
-.sf-search-modal__close {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: rgba(255,255,255,0.1);
-  color: #fff;
-  border: none;
-  border-radius: var(--sf-radius);
-  cursor: pointer;
-  flex-shrink: 0;
-  padding: 0;
-  transition: background var(--sf-transition);
-}
-
-.sf-search-modal__close:hover {
-  background: rgba(255,255,255,0.2);
-}
-
-/* --------------------------------------------------------------------------
-   11. Header height + nav background CSS variables
+   10. Header height + nav background CSS variables
         --sf-header-nav-bg: overridable via ACF Options → Brand & Colors
         --sf-header-height: used for hero content offset + scroll-padding-top
    -------------------------------------------------------------------------- */

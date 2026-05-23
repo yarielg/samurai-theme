@@ -135,7 +135,7 @@
   inset: 0 auto 0 0;
   width: 300px;
   max-width: 85vw;
-  z-index: var(--sf-z-drawer);
+  z-index: var(--sf-z-filter);
   background: var(--sf-color-background);
   border-right: 1px solid var(--sf-color-border);
   overflow-y: auto;

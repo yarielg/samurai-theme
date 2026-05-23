@@ -199,6 +199,14 @@ function samurai_register_acf_fields(): void {
 				'placeholder' => '(305) 555-0100',
 			],
 			[
+				'key'          => 'field_contact_whatsapp',
+				'label'        => 'WhatsApp Number',
+				'name'         => 'contact_whatsapp',
+				'type'         => 'text',
+				'placeholder'  => '(305) 555-0100',
+				'instructions' => 'Number used for the WhatsApp / Text button. Can match the phone number or be a separate line.',
+			],
+			[
 				'key'         => 'field_contact_email',
 				'label'       => 'Email',
 				'name'        => 'contact_email',
@@ -236,6 +244,12 @@ function samurai_register_acf_fields(): void {
 				'name'  => 'social_youtube',
 				'type'  => 'url',
 			],
+			[
+				'key'   => 'field_social_x',
+				'label' => 'X (Twitter) URL',
+				'name'  => 'social_x',
+				'type'  => 'url',
+			],
 
 		],
 		'location' => [
@@ -261,6 +275,15 @@ function samurai_register_acf_fields(): void {
 		'title'  => 'Footer',
 		'fields' => [
 
+			[
+				'key'           => 'field_footer_logo_image',
+				'label'         => 'Footer Logo / Image',
+				'name'          => 'footer_logo_image',
+				'type'          => 'image',
+				'return_format' => 'array',
+				'preview_size'  => 'medium',
+				'instructions'  => 'Custom image shown in the footer brand column. Falls back to the site logo if left blank. Recommended: PNG with transparency, max height 60px.',
+			],
 			[
 				'key'         => 'field_footer_description',
 				'label'       => 'Footer Description',
@@ -339,6 +362,20 @@ function samurai_register_acf_fields(): void {
 				'default_value' => 'Shop by Category',
 				'instructions' => 'Heading above the product category grid.',
 			],
+			[
+				'key'          => 'field_home_featured_categories',
+				'label'        => 'Featured Categories',
+				'name'         => 'home_featured_categories',
+				'type'         => 'taxonomy',
+				'taxonomy'     => 'product_cat',
+				'field_type'   => 'multi_select',
+				'return_format' => 'id',
+				'allow_null'   => 1,
+				'multiple'     => 1,
+				'instructions' => 'Pick the categories to display and drag to reorder. Leave blank to show all top-level categories automatically.',
+				'save_terms'   => 0,
+				'load_terms'   => 0,
+			],
 
 			// Section: Featured products
 			[
@@ -395,6 +432,71 @@ function samurai_register_acf_fields(): void {
 				'name'         => 'home_effects_heading',
 				'type'         => 'text',
 				'default_value' => 'Shop by Effect',
+			],
+
+			// Section: Spotlight Slider
+			[
+				'key'          => 'field_home_spotlight_slides',
+				'label'        => 'Spotlight Slides',
+				'name'         => 'home_spotlight_slides',
+				'type'         => 'repeater',
+				'min'          => 0,
+				'max'          => 10,
+				'layout'       => 'row',
+				'button_label' => 'Add Slide',
+				'instructions' => 'Split slides after Shop by Effect: left 3/4 = image, right 1/4 = dark text panel.',
+				'sub_fields'   => [
+					[
+						'key'           => 'field_spotlight_image',
+						'label'         => 'Image',
+						'name'          => 'spotlight_image',
+						'type'          => 'image',
+						'return_format' => 'array',
+						'preview_size'  => 'medium',
+						'instructions'  => 'Landscape product or promo image. Recommended: 1600 × 900 px, JPEG.',
+						'column_width'  => '',
+					],
+					[
+						'key'          => 'field_spotlight_eyebrow',
+						'label'        => 'Eyebrow Label',
+						'name'         => 'spotlight_eyebrow',
+						'type'         => 'text',
+						'placeholder'  => 'e.g. SPOTLIGHT — NEW BANGERS',
+						'instructions' => 'Small all-caps label shown above the heading.',
+						'column_width' => '',
+					],
+					[
+						'key'          => 'field_spotlight_heading',
+						'label'        => 'Heading',
+						'name'         => 'spotlight_heading',
+						'type'         => 'text',
+						'placeholder'  => 'e.g. American 1776',
+						'column_width' => '',
+					],
+					[
+						'key'          => 'field_spotlight_description',
+						'label'        => 'Description',
+						'name'         => 'spotlight_description',
+						'type'         => 'textarea',
+						'rows'         => 3,
+						'column_width' => '',
+					],
+					[
+						'key'           => 'field_spotlight_cta_label',
+						'label'         => 'Button Label',
+						'name'          => 'spotlight_cta_label',
+						'type'          => 'text',
+						'default_value' => 'Shop Now',
+						'column_width'  => '',
+					],
+					[
+						'key'          => 'field_spotlight_cta_url',
+						'label'        => 'Button URL',
+						'name'         => 'spotlight_cta_url',
+						'type'         => 'url',
+						'column_width' => '',
+					],
+				],
 			],
 
 			// Section: Occasions
@@ -556,6 +658,43 @@ function samurai_register_acf_fields(): void {
 
 
 	// =========================================================================
+	// Effect taxonomy term fields
+	// =========================================================================
+	acf_add_local_field_group( [
+		'key'    => 'group_samurai_effect_term',
+		'title'  => 'Effect Images',
+		'fields' => [
+
+			[
+				'key'           => 'field_effect_image_2',
+				'label'         => 'Secondary Image',
+				'name'          => 'image_2',
+				'type'          => 'image',
+				'return_format' => 'array',
+				'preview_size'  => 'medium',
+				'instructions'  => 'Second image for use in frontend templates (e.g. hover state, alternate crop, single-effect page banner).',
+			],
+
+		],
+		'location' => [
+			[
+				[
+					'param'    => 'taxonomy',
+					'operator' => '==',
+					'value'    => 'effect',
+				],
+			],
+		],
+		'menu_order'            => 10,
+		'position'              => 'normal',
+		'style'                 => 'default',
+		'label_placement'       => 'top',
+		'instruction_placement' => 'label',
+		'active'                => true,
+	] );
+
+
+	// =========================================================================
 	// Header & Promo — search placeholder
 	// =========================================================================
 	acf_add_local_field_group( [
@@ -572,6 +711,35 @@ function samurai_register_acf_fields(): void {
 				'instructions' => 'Text shown inside the search box.',
 			],
 
+			[
+				'key'          => 'field_search_quick_links',
+				'label'        => 'Search Quick Links',
+				'name'         => 'search_quick_links',
+				'type'         => 'repeater',
+				'min'          => 0,
+				'max'          => 12,
+				'layout'       => 'table',
+				'button_label' => 'Add Link',
+				'instructions' => 'Pill links shown in the search panel before the user starts typing.',
+				'sub_fields'   => [
+					[
+						'key'          => 'field_search_link_label',
+						'label'        => 'Label',
+						'name'         => 'link_label',
+						'type'         => 'text',
+						'column_width' => 40,
+					],
+					[
+						'key'          => 'field_search_link_url',
+						'label'        => 'URL',
+						'name'         => 'link_url',
+						'type'         => 'text',
+						'placeholder'  => '/shop/ or https://...',
+						'column_width' => 60,
+					],
+				],
+			],
+
 		],
 		'location' => [
 			[
@@ -583,6 +751,89 @@ function samurai_register_acf_fields(): void {
 			],
 		],
 		'menu_order' => 10,
+		'position'   => 'normal',
+		'active'     => true,
+	] );
+
+
+	// =========================================================================
+	// Newsletter — Theme Settings → Newsletter
+	// =========================================================================
+	acf_add_local_field_group( [
+		'key'    => 'group_samurai_newsletter',
+		'title'  => 'Newsletter',
+		'fields' => [
+
+			// ── Section content ──────────────────────────────────────────────
+			[
+				'key'           => 'field_newsletter_heading',
+				'label'         => 'Section Heading',
+				'name'          => 'newsletter_heading',
+				'type'          => 'text',
+				'default_value' => 'Stay in the Loop',
+				'instructions'  => 'Large heading shown on the left of the newsletter section.',
+			],
+			[
+				'key'           => 'field_newsletter_subline',
+				'label'         => 'Section Sub-line',
+				'name'          => 'newsletter_subline',
+				'type'          => 'text',
+				'default_value' => 'Be first to know about flash sales, new arrivals, and fireworks season promotions.',
+			],
+			[
+				'key'          => 'field_newsletter_terms_url',
+				'label'        => 'Terms & Conditions URL',
+				'name'         => 'newsletter_terms_url',
+				'type'         => 'url',
+				'instructions' => 'Link used in the "I accept the Terms & Conditions" checkbox label.',
+			],
+
+			// ── Mailchimp credentials ────────────────────────────────────────
+			[
+				'key'          => 'field_mailchimp_api_key',
+				'label'        => 'Mailchimp API Key',
+				'name'         => 'mailchimp_api_key',
+				'type'         => 'text',
+				'instructions' => 'Found in Mailchimp → Account → Extras → API keys. Format: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-us1',
+			],
+			[
+				'key'          => 'field_mailchimp_list_id',
+				'label'        => 'Mailchimp Audience / List ID',
+				'name'         => 'mailchimp_list_id',
+				'type'         => 'text',
+				'instructions' => 'Found in Mailchimp → Audience → Settings → Audience name and defaults → Audience ID.',
+			],
+			[
+				'key'           => 'field_mailchimp_double_optin',
+				'label'         => 'Double Opt-in',
+				'name'          => 'mailchimp_double_optin',
+				'type'          => 'true_false',
+				'default_value' => 0,
+				'ui'            => 1,
+				'ui_on_text'    => 'On',
+				'ui_off_text'   => 'Off',
+				'instructions'  => 'When enabled, subscribers receive a confirmation email before being added to the list (recommended for GDPR compliance).',
+			],
+			[
+				'key'          => 'field_mailchimp_tag',
+				'label'        => 'Subscriber Tag',
+				'name'         => 'mailchimp_tag',
+				'type'         => 'text',
+				'instructions' => 'Optional. Tag applied to every new subscriber in Mailchimp (e.g. "Website Signup", "Homepage Form"). Leave blank to skip tagging.',
+				'placeholder'  => 'e.g. Website Signup',
+			],
+
+		],
+		'location' => [
+			[
+				[
+					'param'    => 'options_page',
+					'operator' => '==',
+					'value'    => 'samurai-newsletter',
+				],
+			],
+		],
+		'menu_order' => 0,
 		'position'   => 'normal',
 		'active'     => true,
 	] );

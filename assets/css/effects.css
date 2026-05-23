@@ -1,0 +1,303 @@
+/* ==========================================================================
+   Effects listing — /effect/ page
+   Hero, breadcrumb, responsive card grid with image backgrounds.
+   ========================================================================== */
+
+/* Remove the default sf-main top padding — the hero provides its own spacing */
+.sf-main--effects {
+  padding-top: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Hero
+   -------------------------------------------------------------------------- */
+.sf-effects-hero {
+  background: var(--sf-color-dark);
+  color: #fff;
+  padding: var(--sf-space-12) 0 var(--sf-space-10);
+}
+
+.sf-effects-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--sf-space-2);
+  margin-bottom: var(--sf-space-6);
+  font-size: var(--sf-text-sm);
+}
+
+.sf-effects-breadcrumb a {
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  transition: color var(--sf-transition);
+}
+
+.sf-effects-breadcrumb a:hover {
+  color: #fff;
+}
+
+.sf-effects-breadcrumb svg {
+  color: rgba(255, 255, 255, 0.28);
+  flex-shrink: 0;
+}
+
+.sf-effects-breadcrumb span {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.sf-effects-hero__heading {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-black);
+  font-size: var(--sf-text-3xl);
+  color: #fff;
+  margin: 0 0 var(--sf-space-4);
+  line-height: 1.1;
+}
+
+@media (min-width: 768px) {
+  .sf-effects-hero__heading {
+    font-size: var(--sf-text-4xl);
+  }
+}
+
+.sf-effects-hero__subline {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: var(--sf-text-base);
+  max-width: 560px;
+  margin: 0 0 var(--sf-space-3);
+  line-height: 1.65;
+}
+
+.sf-effects-hero__count {
+  display: inline-block;
+  font-size: var(--sf-text-sm);
+  color: rgba(255, 255, 255, 0.42);
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   Index wrapper + grid
+   -------------------------------------------------------------------------- */
+.sf-effects-index {
+  padding: var(--sf-space-12) 0 var(--sf-space-16);
+}
+
+.sf-effects-index__empty {
+  text-align: center;
+  color: var(--sf-color-muted);
+  padding: var(--sf-space-16) 0;
+  font-size: var(--sf-text-lg);
+}
+
+.sf-effects-index__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--sf-space-4);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 600px) {
+  .sf-effects-index__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .sf-effects-index__grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--sf-space-5);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Card
+   -------------------------------------------------------------------------- */
+.sf-effects-card-wrap {
+  /* grid cell — no extra styles needed */
+}
+
+.sf-effects-card {
+  position: relative;
+  display: block;
+  border-radius: var(--sf-radius-lg);
+  overflow: hidden;
+  text-decoration: none;
+  aspect-ratio: 3 / 4;
+  background: var(--sf-color-dark);
+  box-shadow: var(--sf-shadow-md);
+  transition: transform var(--sf-transition-slow), box-shadow var(--sf-transition-slow);
+}
+
+.sf-effects-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sf-shadow-lg);
+}
+
+/* Media: fills the full card */
+.sf-effects-card__media {
+  position: absolute;
+  inset: 0;
+}
+
+.sf-effects-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.55s ease;
+}
+
+.sf-effects-card:hover .sf-effects-card__img {
+  transform: scale(1.06);
+}
+
+/* Gradient fallback (shown when no image) */
+.sf-effects-card__gradient {
+  width: 100%;
+  height: 100%;
+}
+
+.sf-effects-card--1 .sf-effects-card__gradient { background: linear-gradient(150deg, #200800 0%, #8c2010 100%); }
+.sf-effects-card--2 .sf-effects-card__gradient { background: linear-gradient(150deg, #080d28 0%, #1e2e7a 100%); }
+.sf-effects-card--3 .sf-effects-card__gradient { background: linear-gradient(150deg, #081808 0%, #175c22 100%); }
+.sf-effects-card--4 .sf-effects-card__gradient { background: linear-gradient(150deg, #1e1000 0%, #7a4a10 100%); }
+.sf-effects-card--5 .sf-effects-card__gradient { background: linear-gradient(150deg, #120818 0%, #4a1278 100%); }
+.sf-effects-card--6 .sf-effects-card__gradient { background: linear-gradient(150deg, #101008 0%, #585814 100%); }
+.sf-effects-card--7 .sf-effects-card__gradient { background: linear-gradient(150deg, #081018 0%, #144868 100%); }
+.sf-effects-card--8 .sf-effects-card__gradient { background: linear-gradient(150deg, #140808 0%, #5a1818 100%); }
+
+/* Scrim: gradient from transparent (top) → dark (bottom) for text legibility */
+.sf-effects-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.88) 0%,
+    rgba(0, 0, 0, 0.30) 50%,
+    rgba(0, 0, 0, 0.05) 100%
+  );
+  transition: background var(--sf-transition-slow);
+}
+
+.sf-effects-card:hover .sf-effects-card__overlay {
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.40) 55%,
+    rgba(0, 0, 0, 0.12) 100%
+  );
+}
+
+/* Product count badge — top-right */
+.sf-effects-card__badge {
+  position: absolute;
+  top: var(--sf-space-3);
+  right: var(--sf-space-3);
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: var(--sf-text-xs);
+  font-weight: var(--sf-weight-semibold);
+  padding: 2px var(--sf-space-2);
+  border-radius: var(--sf-radius-full);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Body: anchored to bottom of card */
+.sf-effects-card__body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  padding: var(--sf-space-4) var(--sf-space-4) var(--sf-space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-2);
+}
+
+@media (min-width: 768px) {
+  .sf-effects-card__body {
+    padding: var(--sf-space-5) var(--sf-space-5) var(--sf-space-6);
+  }
+}
+
+.sf-effects-card__name {
+  font-family: var(--sf-font-heading);
+  font-weight: var(--sf-weight-black);
+  font-size: var(--sf-text-base);
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+}
+
+@media (min-width: 480px) {
+  .sf-effects-card__name {
+    font-size: var(--sf-text-lg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .sf-effects-card__name {
+    font-size: var(--sf-text-xl);
+  }
+}
+
+.sf-effects-card__desc {
+  font-size: var(--sf-text-xs);
+  color: rgba(255, 255, 255, 0.68);
+  line-height: 1.55;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .sf-effects-card__desc {
+    font-size: var(--sf-text-sm);
+  }
+}
+
+/* CTA link-style label */
+.sf-effects-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sf-space-1);
+  font-family: var(--sf-font-heading);
+  font-size: var(--sf-text-xs);
+  font-weight: var(--sf-weight-bold);
+  color: var(--sf-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: var(--sf-space-1);
+  transition: gap var(--sf-transition);
+}
+
+@media (min-width: 768px) {
+  .sf-effects-card__cta {
+    font-size: var(--sf-text-sm);
+  }
+}
+
+.sf-effects-card:hover .sf-effects-card__cta {
+  gap: var(--sf-space-2);
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .sf-effects-card,
+  .sf-effects-card__img,
+  .sf-effects-card__overlay,
+  .sf-effects-card__cta {
+    transition: none;
+  }
+}

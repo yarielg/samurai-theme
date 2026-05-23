@@ -244,6 +244,44 @@
   line-height: 1.4;
 }
 
+/* Per-unit price with regular/sale distinction — mirrors product card layout */
+.sf-minicart__item-unit-price {
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-semibold);
+  line-height: 1.3;
+  color: var(--sf-color-dark);
+}
+
+.sf-minicart__item-unit-price .woocommerce-Price-amount,
+.sf-minicart__item-unit-price .woocommerce-Price-currencySymbol {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  color: inherit !important;
+}
+
+.sf-minicart__item-unit-price del {
+  color: var(--sf-color-muted);
+  font-weight: var(--sf-weight-normal);
+  font-size: var(--sf-text-xs);
+  text-decoration: line-through;
+  margin-right: 3px;
+}
+
+.sf-minicart__item-unit-price del .woocommerce-Price-amount {
+  font-weight: var(--sf-weight-normal) !important;
+  color: var(--sf-color-muted) !important;
+}
+
+.sf-minicart__item-unit-price ins {
+  text-decoration: none;
+  color: var(--sf-color-primary);
+}
+
+.sf-minicart__item-unit-price ins .woocommerce-Price-amount {
+  color: var(--sf-color-primary) !important;
+}
+
 /* Item foot: qty + price + remove */
 .sf-minicart__item-foot {
   display: flex;

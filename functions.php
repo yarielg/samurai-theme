@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-define( 'SAMURAI_VERSION', '1.6.0' );
+define( 'SAMURAI_VERSION', '2.1.5' );
 define( 'SAMURAI_DIR', get_template_directory() );
 define( 'SAMURAI_URL', get_template_directory_uri() );
 
@@ -133,6 +133,30 @@ function samurai_scripts(): void {
 	if ( is_front_page() ) {
 		wp_enqueue_style( 'samurai-product-card', SAMURAI_URL . '/assets/css/product-card.css', [ 'samurai-components' ], $ver );
 		wp_enqueue_style( 'samurai-home',         SAMURAI_URL . '/assets/css/home.css',         [ 'samurai-product-card' ], $ver );
+		wp_enqueue_style( 'samurai-newsletter',   SAMURAI_URL . '/assets/css/newsletter.css',   [ 'samurai-components' ], $ver );
+		wp_enqueue_script(
+			'samurai-newsletter',
+			SAMURAI_URL . '/assets/js/newsletter.js',
+			[],
+			$ver,
+			[ 'strategy' => 'defer', 'in_footer' => true ]
+		);
+		wp_localize_script( 'samurai-newsletter', 'sfNewsletter', [
+			'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+			'nonce'   => wp_create_nonce( 'sf-newsletter' ),
+			'i18n'    => [
+				'emailInvalid'  => __( 'Please enter a valid email address.', 'samurai' ),
+				'termsRequired' => __( 'Please accept the Terms & Conditions.', 'samurai' ),
+				'sending'       => __( 'Sending…', 'samurai' ),
+				'submit'        => __( 'Subscribe Now', 'samurai' ),
+				'error'         => __( 'Something went wrong. Please try again.', 'samurai' ),
+			],
+		] );
+	}
+
+	// Effects listing page — /effect/
+	if ( get_query_var( 'sf_effects_listing' ) ) {
+		wp_enqueue_style( 'samurai-effects', SAMURAI_URL . '/assets/css/effects.css', [ 'samurai-components' ], $ver );
 	}
 
 	// Product archive styles + JS (shop, categories, custom taxonomy archives)
@@ -205,6 +229,9 @@ function samurai_scripts(): void {
 		if ( is_wc_endpoint_url( 'view-order' ) ) {
 			wp_enqueue_style( 'samurai-thankyou', SAMURAI_URL . '/assets/css/thankyou.css', [ 'samurai-components' ], $ver );
 		}
+		if ( ! is_user_logged_in() ) {
+			wp_enqueue_style( 'samurai-login', SAMURAI_URL . '/assets/css/login.css', [ 'samurai-components' ], $ver );
+		}
 	}
 
 	// Single product styles + JS
@@ -219,6 +246,21 @@ function samurai_scripts(): void {
 			[ 'strategy' => 'defer', 'in_footer' => true ]
 		);
 	}
+
+	// Search overlay — global (header component, needed on all pages)
+	wp_enqueue_style( 'samurai-search', SAMURAI_URL . '/assets/css/search.css', [ 'samurai-components' ], $ver );
+	wp_enqueue_script(
+		'samurai-search',
+		SAMURAI_URL . '/assets/js/search.js',
+		[],
+		$ver,
+		[ 'strategy' => 'defer', 'in_footer' => true ]
+	);
+	wp_localize_script( 'samurai-search', 'sfSearch', [
+		'endpoint' => rest_url( 'samurai/v1/search' ),
+		'shopUrl'  => function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' ),
+		'nonce'    => wp_create_nonce( 'wp_rest' ),
+	] );
 
 	// Mini cart + mega menu JS are global (header components, needed on all pages)
 	wp_enqueue_script(
@@ -255,6 +297,24 @@ function samurai_scripts(): void {
 add_action( 'wp_enqueue_scripts', 'samurai_scripts' );
 
 // ---------------------------------------------------------------------------
+// Search — quick links for the search overlay chips (configured via ACF Options).
+// ---------------------------------------------------------------------------
+function samurai_get_search_quick_links(): array {
+	if ( ! function_exists( 'get_field' ) ) return [];
+	$rows = get_field( 'search_quick_links', 'option' );
+	if ( empty( $rows ) ) return [];
+	$links = [];
+	foreach ( $rows as $row ) {
+		$label = sanitize_text_field( $row['link_label'] ?? '' );
+		$url   = esc_url_raw( $row['link_url'] ?? '' );
+		if ( $label && $url ) {
+			$links[] = [ 'name' => $label, 'url' => $url ];
+		}
+	}
+	return $links;
+}
+
+// ---------------------------------------------------------------------------
 // Archive — register sidebar filter query vars so WP canonical redirect
 // does not strip them from the URL.
 // NOTE: params intentionally use the "sf_" prefix (not "filter_") to avoid
@@ -268,6 +328,7 @@ add_filter( 'query_vars', function ( array $vars ): array {
 	$vars[] = 'sf_size';
 	$vars[] = 'sf_sound_level';
 	$vars[] = 'sf_timing';
+	$vars[] = 'sf_effects_listing';
 	return $vars;
 } );
 
@@ -567,6 +628,7 @@ function samurai_register_acf_options(): void {
 		'Contact & Hours'     => 'samurai-contact',
 		'Header & Promo'      => 'samurai-header-promo',
 		'Homepage'            => 'samurai-homepage',
+		'Newsletter'          => 'samurai-newsletter',
 		'Cart & Checkout'     => 'samurai-cart-checkout',
 		'Footer'              => 'samurai-footer',
 	];
@@ -744,6 +806,34 @@ function samurai_tax_archive_url( string $taxonomy ): string {
 		: $taxonomy;
 	return home_url( '/' . $slug . '/' );
 }
+
+// ---------------------------------------------------------------------------
+// Effects listing — /effect/ base URL resolves to all-effects index page.
+//
+// WordPress does not automatically route a taxonomy's base slug to any
+// template (individual term archives work via is_product_taxonomy(), but the
+// bare /effect/ URL falls through to 404). We add a rewrite rule that
+// matches ^effect/? and sets a custom query var, then load page-effects.php
+// via template_redirect.
+//
+// After activating or switching themes, visit Settings → Permalinks and click
+// "Save Changes" once to flush the rewrite rules and activate this rule.
+// ---------------------------------------------------------------------------
+function samurai_effects_rewrite(): void {
+	add_rewrite_rule( '^effect/?$', 'index.php?sf_effects_listing=1', 'top' );
+	add_rewrite_tag( '%sf_effects_listing%', '([^&]+)' );
+}
+add_action( 'init', 'samurai_effects_rewrite' );
+
+add_action( 'template_redirect', function (): void {
+	if ( ! get_query_var( 'sf_effects_listing' ) ) {
+		return;
+	}
+	include get_template_directory() . '/page-effects.php';
+	exit;
+} );
+
+add_action( 'after_switch_theme', 'flush_rewrite_rules' );
 
 // ---------------------------------------------------------------------------
 // WooCommerce: keep default styles but allow targeted dequeue later
@@ -1027,3 +1117,126 @@ function samurai_handle_remove_coupon(): void {
 }
 add_action( 'wp_ajax_sf_remove_coupon',        'samurai_handle_remove_coupon' );
 add_action( 'wp_ajax_nopriv_sf_remove_coupon', 'samurai_handle_remove_coupon' );
+
+// ---------------------------------------------------------------------------
+// Newsletter subscription AJAX handler — sf_newsletter_subscribe
+//
+// Collects email + phone, validates, then POSTs to Mailchimp Marketing API v3.
+// API key format: {key}-{datacenter}  (e.g. abc123-us1).
+// Credentials stored in ACF Options → Theme Settings → Newsletter.
+//
+// Returns JSON success/error with a plain-text message.
+// ---------------------------------------------------------------------------
+function samurai_newsletter_subscribe(): void {
+	check_ajax_referer( 'sf-newsletter', 'nonce' );
+
+	$email = sanitize_email( wp_unslash( $_POST['email'] ?? '' ) );
+	$phone = sanitize_text_field( wp_unslash( $_POST['phone'] ?? '' ) );
+	$terms = ! empty( $_POST['terms'] );
+
+	if ( ! is_email( $email ) ) {
+		wp_send_json_error( [ 'message' => __( 'Please enter a valid email address.', 'samurai' ) ] );
+	}
+
+	if ( ! $terms ) {
+		wp_send_json_error( [ 'message' => __( 'Please accept the Terms & Conditions.', 'samurai' ) ] );
+	}
+
+	$api_key      = function_exists( 'get_field' ) ? (string) get_field( 'mailchimp_api_key',      'option' ) : '';
+	$list_id      = function_exists( 'get_field' ) ? (string) get_field( 'mailchimp_list_id',      'option' ) : '';
+	$double_optin = function_exists( 'get_field' ) ? (bool)   get_field( 'mailchimp_double_optin', 'option' ) : false;
+	$tag          = function_exists( 'get_field' ) ? (string) get_field( 'mailchimp_tag',          'option' ) : '';
+
+	if ( ! $api_key || ! $list_id ) {
+		wp_send_json_error( [ 'message' => __( 'Newsletter service is not configured yet. Please try again later.', 'samurai' ) ] );
+	}
+
+	// Datacenter is the suffix after the last dash (e.g. "abc123-us1" → "us1")
+	$server = substr( $api_key, strrpos( $api_key, '-' ) + 1 );
+
+	$body = [
+		'email_address' => $email,
+		'status'        => $double_optin ? 'pending' : 'subscribed',
+	];
+
+	if ( $phone ) {
+		$body['merge_fields'] = [ 'PHONE' => $phone ];
+	}
+
+	// On local/dev environments (WAMP, XAMPP, MAMP, .local, localhost) PHP's
+	// cURL cannot verify external SSL certificates — no CA bundle is configured.
+	// Detect local by URL pattern OR by ABSPATH containing a known stack directory
+	// (covers virtual-host setups where the site URL looks like a real domain).
+	$sf_home      = home_url();
+	$sf_abspath   = strtolower( ABSPATH );
+	$sf_is_local  = (
+		str_contains( $sf_home,    'localhost' )  ||
+		str_contains( $sf_home,    '127.0.0.1' )  ||
+		str_contains( $sf_home,    '.local' )      ||
+		str_contains( $sf_home,    '.test' )       ||
+		str_contains( $sf_abspath, 'wamp' )        ||
+		str_contains( $sf_abspath, 'xampp' )       ||
+		str_contains( $sf_abspath, 'mamp' )        ||
+		str_contains( $sf_abspath, 'laragon' )     ||
+		( isset( $_SERVER['SERVER_ADDR'] ) && $_SERVER['SERVER_ADDR'] === '127.0.0.1' )
+	);
+
+	$response = wp_remote_post(
+		"https://{$server}.api.mailchimp.com/3.0/lists/{$list_id}/members",
+		[
+			'headers'   => [
+				'Authorization' => 'Basic ' . base64_encode( 'anystring:' . $api_key ),
+				'Content-Type'  => 'application/json',
+			],
+			'body'      => wp_json_encode( $body ),
+			'timeout'   => 15,
+			'sslverify' => ! $sf_is_local,
+		]
+	);
+
+	if ( is_wp_error( $response ) ) {
+		error_log( '[Samurai Newsletter] Mailchimp connection failed: ' . $response->get_error_message() );
+		wp_send_json_error( [ 'message' => __( 'Could not reach the newsletter service. Please try again.', 'samurai' ) ] );
+	}
+
+	$code    = (int) wp_remote_retrieve_response_code( $response );
+	$payload = json_decode( wp_remote_retrieve_body( $response ), true );
+
+	// Success: new subscriber created
+	if ( $code === 200 || $code === 201 ) {
+
+		// Apply tag if configured — non-fatal if it fails
+		if ( $tag ) {
+			$subscriber_hash = md5( strtolower( $email ) );
+			wp_remote_post(
+				"https://{$server}.api.mailchimp.com/3.0/lists/{$list_id}/members/{$subscriber_hash}/tags",
+				[
+					'headers'   => [
+						'Authorization' => 'Basic ' . base64_encode( 'anystring:' . $api_key ),
+						'Content-Type'  => 'application/json',
+					],
+					'body'      => wp_json_encode( [
+						'tags' => [ [ 'name' => sanitize_text_field( $tag ), 'status' => 'active' ] ],
+					] ),
+					'timeout'   => 10,
+					'sslverify' => ! $sf_is_local,
+				]
+			);
+		}
+
+		$msg = $double_optin
+			? __( 'One more step — check your inbox and click the confirmation link.', 'samurai' )
+			: __( 'Subscribed! You\'ll be the first to know about our deals and new arrivals.', 'samurai' );
+		wp_send_json_success( [ 'message' => $msg ] );
+	}
+
+	// Already subscribed — soft success so UX doesn't expose who's on the list
+	if ( $code === 400 && ( $payload['title'] ?? '' ) === 'Member Exists' ) {
+		wp_send_json_success( [ 'message' => __( 'You\'re already subscribed — keep an eye on your inbox for upcoming deals!', 'samurai' ) ] );
+	}
+
+	// Any other Mailchimp error
+	wp_send_json_error( [ 'message' => __( 'Something went wrong. Please try again later.', 'samurai' ) ] );
+}
+add_action( 'wp_ajax_sf_newsletter_subscribe',        'samurai_newsletter_subscribe' );
+add_action( 'wp_ajax_nopriv_sf_newsletter_subscribe', 'samurai_newsletter_subscribe' );

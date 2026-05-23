@@ -44,7 +44,7 @@
   content: '';
   position: absolute;
   left: -70px;
-  bottom: -50px;
+  bottom: 0;
   width: 300px;
   height: 300px;
   background: url('../images/firework-pattern.png') no-repeat center / contain;
@@ -77,6 +77,7 @@
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr;
     gap: var(--sf-space-8);
+    align-items: start;
   }
 }
 
@@ -103,8 +104,9 @@
 }
 
 .sf-footer__logo img,
-.sf-footer__logo .custom-logo {
-  max-height: 40px;
+.sf-footer__logo .custom-logo,
+.sf-footer__logo-img {
+  max-height: 60px;
   width: auto;
 }
 
@@ -383,6 +385,174 @@ a.sf-footer__contact-row:hover {
   flex-shrink: 0;
 }
 
+/* --------------------------------------------------------------------------
+   5. Stay Connected band
+   -------------------------------------------------------------------------- */
+.sf-footer__connect {
+  background: rgba(255,255,255,0.025);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: var(--sf-space-6) 0;
+}
+
+.sf-footer__connect-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sf-space-8);
+  flex-wrap: wrap;
+}
+
+.sf-footer__connect-left,
+.sf-footer__connect-right {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-3);
+}
+
+.sf-footer__connect-label {
+  font-family: var(--sf-font-heading);
+  font-size: var(--sf-text-xs);
+  font-weight: var(--sf-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--sf-color-accent);
+  margin: 0;
+}
+
+.sf-footer__connect-actions {
+  display: flex;
+  gap: var(--sf-space-3);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Pill CTA buttons */
+.sf-footer__connect-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sf-space-3);
+  padding: var(--sf-space-3) var(--sf-space-5);
+  border-radius: 100px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06);
+  text-decoration: none;
+  color: #fff;
+  transition: background var(--sf-transition), border-color var(--sf-transition), transform var(--sf-transition);
+  white-space: nowrap;
+}
+
+.sf-footer__connect-btn:hover {
+  transform: translateY(-2px);
+}
+
+.sf-footer__connect-btn svg {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.sf-footer__connect-btn > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sf-footer__connect-btn-label {
+  font-size: 10px;
+  font-weight: var(--sf-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: rgba(255,255,255,0.5);
+  line-height: 1;
+}
+
+.sf-footer__connect-btn-val {
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-semibold);
+  color: #fff;
+  line-height: 1;
+}
+
+/* Phone — red tint */
+.sf-footer__connect-btn--phone {
+  border-color: rgba(210, 55, 45, 0.45);
+  background: rgba(210, 55, 45, 0.12);
+}
+
+.sf-footer__connect-btn--phone:hover {
+  background: var(--sf-color-primary);
+  border-color: var(--sf-color-primary);
+}
+
+.sf-footer__connect-btn--phone:hover .sf-footer__connect-btn-label {
+  color: rgba(255,255,255,0.7);
+}
+
+/* WhatsApp — green tint */
+.sf-footer__connect-btn--wa {
+  border-color: rgba(37, 211, 102, 0.35);
+  background: rgba(37, 211, 102, 0.08);
+}
+
+.sf-footer__connect-btn--wa:hover {
+  background: #25d366;
+  border-color: #25d366;
+}
+
+.sf-footer__connect-btn--wa:hover .sf-footer__connect-btn-label {
+  color: rgba(255,255,255,0.75);
+}
+
+/* Social icons row in connect section */
+.sf-footer__socials {
+  display: flex;
+  gap: var(--sf-space-2);
+  align-items: center;
+}
+
+/* Larger icons in the connect strip (override base size) */
+.sf-footer__connect-right .sf-footer__social-link {
+  width: 44px;
+  height: 44px;
+}
+
+/* Platform-specific hover colors */
+.sf-footer__social-link--yt:hover { background: #ff0000;  color: #fff; }
+.sf-footer__social-link--ig:hover { background: #e1306c;  color: #fff; }
+.sf-footer__social-link--fb:hover { background: #1877f2;  color: #fff; }
+.sf-footer__social-link--x:hover  { background: #1a1a1a;  color: #fff; border-color: rgba(255,255,255,0.25); }
+
+/* Responsive — stack on mobile */
+@media (max-width: 767px) {
+  .sf-footer__connect-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sf-space-5);
+  }
+
+  .sf-footer__connect-right {
+    width: 100%;
+  }
+
+  .sf-footer__socials {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 479px) {
+  .sf-footer__connect-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sf-footer__connect-btn {
+    justify-content: flex-start;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. Reduced motion
+   -------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .sf-footer__main::before,
   .sf-footer__main::after {

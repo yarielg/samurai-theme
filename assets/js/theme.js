@@ -289,42 +289,12 @@
 	} );
 
 	// -------------------------------------------------------------------------
-	// Search popup — opens on search icon click; works on all screen sizes.
-	// Phase 5 will add AJAX live results. This version is a standard form submit.
-	// -------------------------------------------------------------------------
-	var searchModal  = qs( '#sf-search-modal' );
-	var searchClose  = qs( '.js-search-close' );
-	// Multiple search toggles possible (header icon, other instances)
-	var searchToggles = qsa( '.js-search-toggle' );
-
-	function openSearch() {
-		if ( ! searchModal ) return;
-		searchModal.classList.add( 'is-open' );
-		searchModal.setAttribute( 'aria-hidden', 'false' );
-		searchToggles.forEach( function ( t ) { t.setAttribute( 'aria-expanded', 'true' ); } );
-		var inp = qs( '#sf-search-modal-input', searchModal );
-		if ( inp ) setTimeout( function () { inp.focus(); }, 80 );
-	}
-
-	function closeSearch() {
-		if ( ! searchModal ) return;
-		searchModal.classList.remove( 'is-open' );
-		searchModal.setAttribute( 'aria-hidden', 'true' );
-		searchToggles.forEach( function ( t ) { t.setAttribute( 'aria-expanded', 'false' ); } );
-		if ( searchToggles[ 0 ] ) searchToggles[ 0 ].focus();
-	}
-
-	searchToggles.forEach( function ( t ) { t.addEventListener( 'click', openSearch ); } );
-	if ( searchClose ) searchClose.addEventListener( 'click', closeSearch );
-
-	// -------------------------------------------------------------------------
 	// Escape key closes all open panels
 	// -------------------------------------------------------------------------
 	document.addEventListener( 'keydown', function ( e ) {
 		if ( e.key !== 'Escape' ) return;
 		if ( mobileMenu && mobileMenu.classList.contains( 'is-open' ) ) closeMobileMenu();
 		if ( megaPanel  && megaPanel.classList.contains( 'is-open' ) )  { clearTimeout( megaTimer ); megaOpen = false; megaPanel.classList.remove( 'is-open' ); if ( megaBackdrop ) megaBackdrop.classList.remove( 'is-visible' ); if ( megaTrigger ) megaTrigger.setAttribute( 'aria-expanded', 'false' ); }
-		if ( searchModal && searchModal.classList.contains( 'is-open' ) ) closeSearch();
 	} );
 
 	// -------------------------------------------------------------------------
@@ -473,5 +443,62 @@
 	}
 	setScrollPadding();
 	window.addEventListener( 'resize', setScrollPadding );
+
+	// -------------------------------------------------------------------------
+	// Spotlight slider — two-column product feature slider
+	// -------------------------------------------------------------------------
+	qsa( '.js-spotlight' ).forEach( function ( sliderEl ) {
+		var slides  = qsa( '.sf-spotlight__slide', sliderEl );
+		var dots    = qsa( '.sf-spotlight__dot', sliderEl );
+		var prevBtn = qs( '.js-spotlight-prev', sliderEl );
+		var nextBtn = qs( '.js-spotlight-next', sliderEl );
+		var current = 0;
+		var total   = slides.length;
+		var reducedMotion = window.matchMedia( '(prefers-reduced-motion: reduce)' ).matches;
+
+		if ( total < 1 ) return;
+
+		function goTo( n ) {
+			slides[ current ].classList.remove( 'is-active', 'is-entering' );
+			slides[ current ].setAttribute( 'aria-hidden', 'true' );
+			if ( dots[ current ] ) {
+				dots[ current ].classList.remove( 'is-active' );
+				dots[ current ].setAttribute( 'aria-current', 'false' );
+			}
+
+			current = ( n + total ) % total;
+
+			slides[ current ].classList.add( 'is-active' );
+			slides[ current ].setAttribute( 'aria-hidden', 'false' );
+			if ( ! reducedMotion ) {
+				slides[ current ].classList.add( 'is-entering' );
+				setTimeout( function () { slides[ current ].classList.remove( 'is-entering' ); }, 450 );
+			}
+			if ( dots[ current ] ) {
+				dots[ current ].classList.add( 'is-active' );
+				dots[ current ].setAttribute( 'aria-current', 'true' );
+			}
+		}
+
+		if ( prevBtn ) prevBtn.addEventListener( 'click', function () { goTo( current - 1 ); } );
+		if ( nextBtn ) nextBtn.addEventListener( 'click', function () { goTo( current + 1 ); } );
+
+		dots.forEach( function ( dot ) {
+			dot.addEventListener( 'click', function () {
+				var idx = parseInt( dot.getAttribute( 'data-slide' ), 10 );
+				goTo( idx );
+			} );
+		} );
+
+		// Touch/swipe
+		var touchStartX = 0;
+		sliderEl.addEventListener( 'touchstart', function ( e ) {
+			touchStartX = e.changedTouches[ 0 ].screenX;
+		}, { passive: true } );
+		sliderEl.addEventListener( 'touchend', function ( e ) {
+			var diff = touchStartX - e.changedTouches[ 0 ].screenX;
+			if ( Math.abs( diff ) > 40 ) goTo( diff > 0 ? current + 1 : current - 1 );
+		}, { passive: true } );
+	} );
 
 } )();

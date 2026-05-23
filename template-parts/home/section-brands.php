@@ -37,22 +37,6 @@ foreach ( $sf_brands as $sf_brand ) {
 ?>
 <section class="sf-home-section sf-brands-section" aria-label="<?php echo esc_attr( $sf_heading ); ?>">
 
-	<div class="sf-container">
-		<div class="sf-section-header sf-brands__header">
-			<div class="sf-brands__title-group">
-				<p class="sf-brands__eyebrow">
-					<span class="sf-brands__eyebrow-dot" aria-hidden="true"></span>
-					<?php esc_html_e( 'Our Partners', 'samurai' ); ?>
-				</p>
-				<h2 class="sf-section-heading"><?php echo esc_html( $sf_heading ); ?></h2>
-			</div>
-			<a href="<?php echo esc_url( samurai_tax_archive_url( 'brand' ) ); ?>" class="sf-section-link">
-				<?php esc_html_e( 'All Brands', 'samurai' ); ?>
-				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-			</a>
-		</div>
-	</div>
-
 	<!-- Marquee — duplicated set for seamless CSS loop -->
 	<div class="sf-brand-marquee-wrap" role="region" aria-label="<?php esc_attr_e( 'Scrolling brand logos', 'samurai' ); ?>">
 		<div class="sf-brand-marquee">
@@ -82,7 +66,6 @@ foreach ( $sf_brands as $sf_brand ) {
 					<?php endif; ?>
 				</div>
 
-				<span class="sf-brand-logo-card__name"><?php echo esc_html( $sf_name ); ?></span>
 
 			</a>
 				<?php endforeach; ?>

@@ -1,0 +1,554 @@
+/* ==========================================================================
+   Login / Register page — Samurai theme
+   Loaded on is_account_page() && !is_user_logged_in()
+   ========================================================================== */
+
+/* ── Page-level resets ─────────────────────────────────────────────────── */
+.woocommerce-account:not(.logged-in) .sf-main {
+	background: #0b0b0b;
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+.woocommerce-account:not(.logged-in) .woocommerce {
+	display: block;
+	padding: 0;
+	max-width: none;
+}
+
+/* ── Outer wrapper ─────────────────────────────────────────────────────── */
+.sf-login {
+	display: grid;
+	grid-template-columns: 420px 1fr;
+	min-height: calc(100vh - var(--sf-header-h, 72px));
+}
+
+/* ── WC notices above the two-col layout ──────────────────────────────── */
+.woocommerce-account:not(.logged-in) .woocommerce-notices-wrapper {
+	grid-column: 1 / -1;
+	padding: 16px clamp(20px, 4vw, 48px) 0;
+}
+
+.woocommerce-account:not(.logged-in) .woocommerce-notices-wrapper .woocommerce-message,
+.woocommerce-account:not(.logged-in) .woocommerce-notices-wrapper .woocommerce-error,
+.woocommerce-account:not(.logged-in) .woocommerce-notices-wrapper .woocommerce-info {
+	border-radius: 10px;
+	margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   HERO PANEL
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.sf-login__hero {
+	position: relative;
+	overflow: hidden;
+	background:
+		radial-gradient(ellipse at 15% 12%, rgba(192, 57, 43, .38) 0%, transparent 52%),
+		radial-gradient(ellipse at 85% 88%, rgba(192, 57, 43, .22) 0%, transparent 45%),
+		#0d0d0d;
+	display: flex;
+	align-items: center;
+	padding: clamp(40px, 5vw, 72px) clamp(28px, 4vw, 52px);
+}
+
+/* Decorative spark burst — pure CSS, top-right */
+.sf-login__hero::before {
+	content: '';
+	position: absolute;
+	top: -80px;
+	right: -80px;
+	width: 320px;
+	height: 320px;
+	border-radius: 50%;
+	background: radial-gradient(circle at center, rgba(192, 57, 43, .18) 0%, transparent 65%);
+	pointer-events: none;
+}
+
+/* Second subtle glow — bottom-left */
+.sf-login__hero::after {
+	content: '';
+	position: absolute;
+	bottom: -60px;
+	left: -60px;
+	width: 260px;
+	height: 260px;
+	border-radius: 50%;
+	background: radial-gradient(circle at center, rgba(192, 57, 43, .12) 0%, transparent 65%);
+	pointer-events: none;
+}
+
+.sf-login__hero-inner {
+	position: relative;
+	z-index: 1;
+	width: 100%;
+}
+
+/* Headline */
+.sf-login__hero-title {
+	font-family: var(--sf-font-heading, 'Montserrat', sans-serif);
+	font-weight: 900;
+	font-size: clamp(26px, 2.8vw, 36px);
+	color: #fff;
+	line-height: 1.15;
+	margin: 0 0 12px;
+	letter-spacing: -.02em;
+}
+
+.sf-login__hero-sub {
+	font-size: 15px;
+	color: rgba(255, 255, 255, .55);
+	margin: 0 0 40px;
+	line-height: 1.5;
+}
+
+/* Benefits list */
+.sf-login__benefits {
+	list-style: none;
+	margin: 0 0 40px;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 22px;
+}
+
+.sf-login__benefit {
+	display: flex;
+	align-items: flex-start;
+	gap: 16px;
+}
+
+.sf-login__benefit-icon {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 10px;
+	background: rgba(192, 57, 43, .2);
+	border: 1px solid rgba(192, 57, 43, .35);
+	color: #e05a4a;
+}
+
+.sf-login__benefit strong {
+	display: block;
+	font-family: var(--sf-font-heading, 'Montserrat', sans-serif);
+	font-weight: 700;
+	font-size: 14px;
+	color: #fff;
+	margin-bottom: 2px;
+}
+
+.sf-login__benefit span {
+	font-size: 13px;
+	color: rgba(255, 255, 255, .48);
+	line-height: 1.45;
+}
+
+/* Security badge */
+.sf-login__hero-badge {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 12px;
+	color: rgba(255, 255, 255, .35);
+	border-top: 1px solid rgba(255, 255, 255, .08);
+	padding-top: 24px;
+}
+
+.sf-login__hero-badge svg {
+	flex-shrink: 0;
+	opacity: .45;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FORMS AREA
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.sf-login__forms {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: clamp(32px, 5vw, 64px) clamp(20px, 4vw, 56px);
+	background: #111;
+}
+
+/* ── Card ──────────────────────────────────────────────────────────────── */
+.sf-lcard {
+	width: 100%;
+	max-width: 480px;
+	background: #fff;
+	border-radius: 20px;
+	border-top: 4px solid var(--sf-color-red, #C0392B);
+	padding: clamp(28px, 4vw, 48px) clamp(24px, 4vw, 44px);
+	box-shadow: 0 32px 80px rgba(0, 0, 0, .55);
+	animation: sf-lcard-in .28s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+.sf-lcard--hidden {
+	display: none;
+}
+
+.sf-lcard--appearing {
+	animation: sf-lcard-in .28s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes sf-lcard-in {
+	from { opacity: 0; transform: translateY(10px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Verify-step card — centered text */
+.sf-lcard--verify {
+	text-align: center;
+}
+
+/* ── Card icon (verify step) ───────────────────────────────────────────── */
+.sf-lcard__icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 72px;
+	height: 72px;
+	background: rgba(192, 57, 43, .1);
+	border-radius: 50%;
+	margin: 0 auto 24px;
+	color: var(--sf-color-red, #C0392B);
+}
+
+/* ── Headings ──────────────────────────────────────────────────────────── */
+.sf-lcard__title {
+	font-family: var(--sf-font-heading, 'Montserrat', sans-serif);
+	font-weight: 800;
+	font-size: clamp(20px, 2.2vw, 26px);
+	color: #0d0d0d;
+	margin: 0 0 6px;
+	line-height: 1.2;
+}
+
+.sf-lcard__sub {
+	font-size: 14px;
+	color: #6b7280;
+	margin: 0 0 28px;
+	line-height: 1.5;
+}
+
+/* ── Switch link (toggle between login / register) ─────────────────────── */
+.sf-lcard__switch {
+	margin: 24px 0 0;
+	font-size: 13px;
+	color: #6b7280;
+	text-align: center;
+}
+
+.sf-lcard__switch a {
+	color: var(--sf-color-red, #C0392B);
+	font-weight: 700;
+	text-decoration: none;
+	margin-left: 4px;
+}
+
+.sf-lcard__switch a:hover {
+	text-decoration: underline;
+}
+
+/* ── Tabs ──────────────────────────────────────────────────────────────── */
+.sf-ltabs {
+	display: flex;
+	gap: 4px;
+	background: #f3f4f6;
+	border-radius: 12px;
+	padding: 4px;
+	margin-bottom: 24px;
+}
+
+.sf-ltabs__btn {
+	flex: 1;
+	appearance: none;
+	border: none;
+	border-radius: 9px;
+	padding: 10px 12px;
+	font-family: var(--sf-font-heading, 'Montserrat', sans-serif);
+	font-weight: 700;
+	font-size: 13px;
+	text-transform: uppercase;
+	letter-spacing: .04em;
+	color: #6b7280;
+	background: transparent;
+	cursor: pointer;
+	transition: background .18s, color .18s, box-shadow .18s;
+}
+
+.sf-ltabs__btn--active {
+	background: #fff;
+	color: var(--sf-color-red, #C0392B);
+	box-shadow: 0 1px 6px rgba(0, 0, 0, .1);
+}
+
+.sf-ltabs__btn:focus-visible {
+	outline: 2px solid var(--sf-color-red, #C0392B);
+	outline-offset: 2px;
+}
+
+/* ── Tab panels ────────────────────────────────────────────────────────── */
+.sf-ltab-panel          { display: none; }
+.sf-ltab-panel--active  { display: block; }
+
+/* ── Form layout ───────────────────────────────────────────────────────── */
+.sf-lcard__form {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+}
+
+/* ── Field ─────────────────────────────────────────────────────────────── */
+.sf-lfield {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.sf-lfield label {
+	font-size: 13px;
+	font-weight: 600;
+	color: #374151;
+	letter-spacing: .01em;
+}
+
+.sf-lfield__req {
+	color: var(--sf-color-red, #C0392B);
+}
+
+.sf-lfield__hint {
+	font-size: 12px;
+	color: #9ca3af;
+	line-height: 1.4;
+}
+
+.sf-lfield__hint--block {
+	background: #f9fafb;
+	border-radius: 8px;
+	padding: 10px 14px;
+}
+
+/* OTP field — center the input */
+.sf-lfield--otp {
+	align-items: center;
+}
+
+/* ── Input ─────────────────────────────────────────────────────────────── */
+.sf-linput {
+	width: 100%;
+	box-sizing: border-box;
+	height: 50px;
+	padding: 0 16px;
+	border-radius: 12px;
+	border: 1.5px solid #e5e7eb;
+	background: #fafafa;
+	font-size: 15px;
+	color: #111827;
+	font-family: inherit;
+	outline: none;
+	transition: border-color .18s, box-shadow .18s;
+}
+
+.sf-linput:focus {
+	border-color: var(--sf-color-red, #C0392B);
+	background: #fff;
+	box-shadow: 0 0 0 3px rgba(192, 57, 43, .12);
+}
+
+.sf-linput::placeholder {
+	color: #9ca3af;
+}
+
+/* OTP big input */
+.sf-linput--otp {
+	height: 72px;
+	font-size: 28px;
+	font-weight: 800;
+	letter-spacing: .25em;
+	text-align: center;
+	max-width: 280px;
+	font-family: var(--sf-font-heading, 'Montserrat', sans-serif);
+}
+
+/* ── Row helpers ───────────────────────────────────────────────────────── */
+.sf-lrow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.sf-lrow--cols {
+	align-items: flex-start;
+	gap: 12px;
+}
+
+.sf-lrow--cols .sf-lfield {
+	flex: 1;
+}
+
+/* ── Checkbox ──────────────────────────────────────────────────────────── */
+.sf-lcheck {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	cursor: pointer;
+	font-size: 13px;
+	color: #374151;
+	user-select: none;
+}
+
+.sf-lcheck input[type="checkbox"] {
+	width: 16px;
+	height: 16px;
+	accent-color: var(--sf-color-red, #C0392B);
+	flex-shrink: 0;
+	cursor: pointer;
+}
+
+/* ── Text link ─────────────────────────────────────────────────────────── */
+.sf-llink {
+	font-size: 13px;
+	color: var(--sf-color-red, #C0392B);
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.sf-llink:hover { text-decoration: underline; }
+
+/* ── Buttons ───────────────────────────────────────────────────────────── */
+.sf-lbtn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	height: 52px;
+	padding: 0 32px;
+	border-radius: 50px;
+	font-family: var(--sf-font-heading, 'Montserrat', sans-serif);
+	font-weight: 800;
+	font-size: 13px;
+	text-transform: uppercase;
+	letter-spacing: .08em;
+	cursor: pointer;
+	border: 2px solid transparent;
+	transition: background .2s, color .2s, border-color .2s, box-shadow .2s, transform .12s;
+	text-decoration: none;
+}
+
+.sf-lbtn--full { width: 100%; }
+
+.sf-lbtn--primary {
+	background: var(--sf-color-red, #C0392B);
+	color: #fff;
+	border-color: var(--sf-color-red, #C0392B);
+}
+
+.sf-lbtn--primary:hover {
+	background: #a93226;
+	border-color: #a93226;
+	box-shadow: 0 6px 24px rgba(192, 57, 43, .35);
+	transform: translateY(-1px);
+}
+
+.sf-lbtn--primary:active {
+	transform: translateY(0);
+	box-shadow: none;
+}
+
+/* ── WC privacy policy text (inside register card) ────────────────────── */
+.sf-lcard .woocommerce-privacy-policy-text {
+	font-size: 12px;
+	color: #9ca3af;
+	line-height: 1.5;
+	margin: 0;
+}
+
+.sf-lcard .woocommerce-privacy-policy-text a {
+	color: #6b7280;
+	text-decoration: underline;
+}
+
+.sf-lcard .woocommerce-privacy-policy-text a:hover {
+	color: var(--sf-color-red, #C0392B);
+}
+
+/* ── reCAPTCHA ─────────────────────────────────────────────────────────── */
+.g-recaptcha {
+	display: flex;
+	justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 900px) {
+	.sf-login {
+		grid-template-columns: 1fr;
+	}
+
+	.sf-login__hero {
+		/* Compact horizontal banner on tablet */
+		align-items: flex-start;
+		padding: 28px clamp(20px, 4vw, 40px);
+	}
+
+	.sf-login__hero-title {
+		font-size: 18px;
+		margin: 0;
+	}
+
+	/* Hide sub, benefits, and badge on mobile to keep banner compact */
+	.sf-login__hero-sub,
+	.sf-login__benefits,
+	.sf-login__hero-badge {
+		display: none;
+	}
+
+	.sf-login__forms {
+		padding: 28px clamp(16px, 4vw, 40px) 40px;
+		align-items: flex-start;
+	}
+}
+
+@media (max-width: 520px) {
+	.sf-lcard {
+		border-radius: 16px;
+		padding: 24px 20px;
+	}
+
+	.sf-lrow--cols {
+		flex-direction: column;
+		gap: 18px;
+	}
+
+	.sf-lrow--cols .sf-lfield {
+		width: 100%;
+	}
+
+	.sf-lbtn {
+		height: 48px;
+		font-size: 12px;
+	}
+
+	.sf-linput--otp {
+		height: 64px;
+		font-size: 24px;
+	}
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+	.sf-lcard,
+	.sf-lcard--appearing,
+	.sf-linput,
+	.sf-lbtn,
+	.sf-ltabs__btn {
+		animation: none;
+		transition: none;
+	}
+}

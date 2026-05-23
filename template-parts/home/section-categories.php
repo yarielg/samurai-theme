@@ -9,19 +9,31 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$sf_cats = get_terms( [
-	'taxonomy'   => 'product_cat',
-	'parent'     => 0,
-	'hide_empty' => true,
-	'orderby'    => 'menu_order',
-	'order'      => 'ASC',
-	'number'     => 8,
-] );
+$sf_selected_ids = function_exists( 'get_field' ) ? get_field( 'home_featured_categories', 'option' ) : [];
+$sf_selected_ids = ! empty( $sf_selected_ids ) ? array_map( 'absint', (array) $sf_selected_ids ) : [];
 
-// Remove the built-in "Uncategorized" term if present.
-$sf_cats = array_filter( $sf_cats, function ( $term ) {
-	return 'uncategorized' !== $term->slug;
-} );
+if ( ! empty( $sf_selected_ids ) ) {
+	// Admin-picked categories — preserve the chosen order.
+	$sf_cats = get_terms( [
+		'taxonomy'   => 'product_cat',
+		'include'    => $sf_selected_ids,
+		'hide_empty' => false,
+		'orderby'    => 'include',
+	] );
+} else {
+	// Fallback: all top-level categories by menu order.
+	$sf_cats = get_terms( [
+		'taxonomy'   => 'product_cat',
+		'parent'     => 0,
+		'hide_empty' => true,
+		'orderby'    => 'menu_order',
+		'order'      => 'ASC',
+		'number'     => 8,
+	] );
+	$sf_cats = array_filter( $sf_cats, function ( $term ) {
+		return 'uncategorized' !== $term->slug;
+	} );
+}
 
 if ( empty( $sf_cats ) || is_wp_error( $sf_cats ) ) {
 	return;
@@ -30,6 +42,14 @@ if ( empty( $sf_cats ) || is_wp_error( $sf_cats ) ) {
 ?>
 <section class="sf-home-section sf-categories-section" aria-label="<?php esc_attr_e( 'Shop by Category', 'samurai' ); ?>">
 	<div class="sf-container">
+
+		<div class="sf-section-header">
+			<h2 class="sf-section-heading"><?php echo esc_html( samurai_option_text( 'home_categories_heading', __( 'Shop by Category', 'samurai' ), false ) ); ?></h2>
+			<a href="<?php echo esc_url( function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'shop' ) : home_url( '/shop/' ) ); ?>" class="sf-section-link">
+				<?php esc_html_e( 'All Categories', 'samurai' ); ?>
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+			</a>
+		</div>
 
 		<div class="sf-cat-grid">
 			<?php foreach ( $sf_cats as $sf_cat ) :

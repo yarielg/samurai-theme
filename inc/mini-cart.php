@@ -97,7 +97,7 @@ function samurai_mini_cart_html(): string {
 					$link       = apply_filters( 'woocommerce_cart_item_permalink', $product->is_visible() ? $product->get_permalink( $item ) : '', $item, $key );
 					$img        = apply_filters( 'woocommerce_cart_item_thumbnail', $product->get_image( [ 80, 80 ], [ 'class' => 'sf-minicart__img' ] ), $item, $key );
 					$name       = apply_filters( 'woocommerce_cart_item_name', $product->get_name(), $item, $key );
-					$line_price = apply_filters( 'woocommerce_cart_item_subtotal', $cart->get_product_subtotal( $product, $item['quantity'] ), $item, $key );
+					$unit_price = $product->get_price_html();
 					$qty        = absint( $item['quantity'] );
 					$nonce      = wp_create_nonce( 'sf-minicart-nonce' );
 
@@ -128,6 +128,8 @@ function samurai_mini_cart_html(): string {
 						<p class="sf-minicart__item-meta"><?php echo implode( ' &middot; ', $attr_parts ); // phpcs:ignore ?></p>
 						<?php endif; ?>
 
+						<div class="sf-minicart__item-unit-price"><?php echo $unit_price; // phpcs:ignore ?></div>
+
 						<div class="sf-minicart__item-foot">
 							<div class="sf-minicart__qty js-mc-qty"
 							     data-cart-key="<?php echo esc_attr( $key ); ?>"
@@ -142,7 +144,6 @@ function samurai_mini_cart_html(): string {
 									<svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" aria-hidden="true"><rect x="4" width="2" height="10" rx="1"/><rect y="4" width="10" height="2" rx="1"/></svg>
 								</button>
 							</div>
-							<span class="sf-minicart__item-price"><?php echo $line_price; // phpcs:ignore ?></span>
 							<button type="button" class="sf-minicart__item-remove js-mc-remove"
 							        data-cart-key="<?php echo esc_attr( $key ); ?>"
 							        data-nonce="<?php echo esc_attr( $nonce ); ?>"

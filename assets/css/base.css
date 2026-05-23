@@ -89,6 +89,7 @@
 
   /* Z-index layers */
   --sf-z-base:    1;
+  --sf-z-filter:  50;
   --sf-z-header:  100;
   --sf-z-drawer:  200;
   --sf-z-modal:   300;

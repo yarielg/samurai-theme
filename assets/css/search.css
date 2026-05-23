@@ -1,0 +1,603 @@
+/* ==========================================================================
+   Search overlay — rich AJAX product search
+   ========================================================================== */
+
+/* Lock body scroll while open */
+body.sf-search-open {
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Pane visibility — class-controlled so external [hidden] overrides can't
+   interfere with the skeleton / results / empty / default panels.
+   -------------------------------------------------------------------------- */
+#sf-search-overlay .sf-search__default,
+#sf-search-overlay .sf-search__loading,
+#sf-search-overlay #sf-search-results-wrap,
+#sf-search-overlay .sf-search__empty {
+  display: none;
+}
+
+#sf-search-overlay .sf-search__loading.is-active,
+#sf-search-overlay #sf-search-results-wrap.is-active {
+  display: block;
+}
+
+#sf-search-overlay .sf-search__default.is-active {
+  display: flex; /* preserves column layout */
+}
+
+#sf-search-overlay .sf-search__empty.is-active {
+  display: flex; /* preserves centered column layout */
+}
+
+/* --------------------------------------------------------------------------
+   1. Overlay shell
+   -------------------------------------------------------------------------- */
+.sf-search {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--sf-z-modal, 1000) + 10);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: var(--sf-header-height, 68px);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.sf-search.is-open {
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* --------------------------------------------------------------------------
+   2. Backdrop
+   -------------------------------------------------------------------------- */
+.sf-search__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.sf-search.is-open .sf-search__backdrop {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   3. Panel (drops from top)
+   -------------------------------------------------------------------------- */
+.sf-search__panel {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  max-height: calc(100vh - var(--sf-header-height, 68px) - 24px);
+  background: #fff;
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(-8px);
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
+}
+
+.sf-search.is-open .sf-search__panel {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   4. Search bar
+   -------------------------------------------------------------------------- */
+.sf-search__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sf-space-2);
+  padding: var(--sf-space-4) var(--sf-space-5);
+  border-bottom: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.sf-search__bar-icon {
+  color: #9ca3af;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.sf-search__input {
+  flex: 1;
+  font-size: var(--sf-text-lg, 1.125rem);
+  font-family: var(--sf-font-body, inherit);
+  color: #111;
+  background: transparent;
+  border: none;
+  outline: none;
+  min-width: 0;
+  padding: var(--sf-space-1) 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.sf-search__input::placeholder {
+  color: #9ca3af;
+}
+
+/* Hide native clear button from webkit */
+.sf-search__input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.sf-search__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #f3f4f6;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #6b7280;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background var(--sf-transition), color var(--sf-transition);
+}
+
+.sf-search__clear:hover {
+  background: #e5e7eb;
+  color: #111;
+}
+
+.sf-search__divider {
+  width: 1px;
+  height: 22px;
+  background: #e5e7eb;
+  flex-shrink: 0;
+  margin: 0 var(--sf-space-1);
+}
+
+.sf-search__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--sf-radius);
+  cursor: pointer;
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-semibold);
+  color: #6b7280;
+  white-space: nowrap;
+  transition: color var(--sf-transition), background var(--sf-transition);
+}
+
+.sf-search__close:hover {
+  color: #111;
+  background: #f3f4f6;
+}
+
+/* --------------------------------------------------------------------------
+   5. Scrollable body
+   -------------------------------------------------------------------------- */
+.sf-search__body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* --------------------------------------------------------------------------
+   6. Default pane (recent searches + categories)
+   -------------------------------------------------------------------------- */
+.sf-search__default {
+  padding: var(--sf-space-5) var(--sf-space-5) var(--sf-space-6);
+  flex-direction: column;
+  gap: var(--sf-space-5);
+}
+
+.sf-search__section-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sf-space-3);
+}
+
+.sf-search__section-title {
+  font-size: var(--sf-text-xs);
+  font-weight: var(--sf-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+}
+
+.sf-search__clear-recent {
+  font-size: var(--sf-text-xs);
+  font-weight: var(--sf-weight-semibold);
+  color: var(--sf-color-primary, #c0392b);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity var(--sf-transition);
+}
+
+.sf-search__clear-recent:hover {
+  opacity: 0.7;
+}
+
+.sf-search__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sf-space-2);
+}
+
+.sf-search__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 100px;
+  font-size: var(--sf-text-sm);
+  font-family: var(--sf-font-body, inherit);
+  color: #374151;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--sf-transition), border-color var(--sf-transition), color var(--sf-transition);
+  white-space: nowrap;
+}
+
+.sf-search__chip:hover {
+  background: #111;
+  border-color: #111;
+  color: #fff;
+}
+
+.sf-search__chip--cat:hover {
+  background: var(--sf-color-primary, #c0392b);
+  border-color: var(--sf-color-primary, #c0392b);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   7. Loading skeleton
+   -------------------------------------------------------------------------- */
+.sf-search__loading {
+  padding: var(--sf-space-2) 0;
+}
+
+.sf-search__skeleton {
+  display: flex;
+  align-items: center;
+  gap: var(--sf-space-4);
+  padding: var(--sf-space-3) var(--sf-space-5);
+}
+
+@keyframes sf-shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+.sf-search__skeleton-thumb,
+.sf-search__skeleton-line {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e9ebee 50%, #f3f4f6 75%);
+  background-size: 1200px 100%;
+  animation: sf-shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.sf-search__skeleton-thumb {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 8px;
+}
+
+.sf-search__skeleton-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sf-space-2);
+}
+
+.sf-search__skeleton-line {
+  height: 13px;
+}
+
+.sf-search__skeleton-line--long  { width: 65%; }
+.sf-search__skeleton-line--short { width: 38%; }
+
+/* --------------------------------------------------------------------------
+   8. Results
+   -------------------------------------------------------------------------- */
+.sf-search__results {
+  list-style: none;
+  margin: 0;
+  padding: var(--sf-space-2) 0;
+}
+
+/* Use ID prefix for specificity — overrides any WC/plugin flex or display rules */
+#sf-search-overlay .sf-search__result {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  gap: var(--sf-space-4);
+  padding: var(--sf-space-3) var(--sf-space-5);
+  cursor: pointer;
+  transition: background var(--sf-transition);
+  outline: none;
+  list-style: none;
+}
+
+#sf-search-overlay .sf-search__result:hover,
+#sf-search-overlay .sf-search__result.is-focused {
+  background: #f9fafb;
+}
+
+#sf-search-overlay .sf-search__result-thumb {
+  width: 56px !important;
+  height: 56px !important;
+  flex: 0 0 56px !important;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#sf-search-overlay .sf-search__result-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+#sf-search-overlay .sf-search__result-body {
+  flex: 1 1 0 !important;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Reset all WC price wrappers inside results — prevents heading-font / size overrides */
+#sf-search-overlay .sf-search__result-price .price,
+#sf-search-overlay .sf-search__result-price .woocommerce-Price-amount,
+#sf-search-overlay .sf-search__result-price .woocommerce-Price-currencySymbol,
+#sf-search-overlay .sf-search__result-price bdi {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  color: inherit !important;
+  display: inline !important;
+  line-height: inherit !important;
+}
+
+.sf-search__result-title {
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-semibold);
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sf-search__result-cat {
+  font-size: var(--sf-text-xs);
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Right-side column: price stack + ATC button */
+#sf-search-overlay .sf-search__result-right {
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex: 0 0 auto !important;
+}
+
+.sf-search__result-price {
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-semibold);
+  color: var(--sf-color-primary, #c0392b);
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* Sale price: strikethrough regular, bold sale */
+.sf-search__result-price del {
+  display: inline !important;
+  color: #9ca3af;
+  font-weight: var(--sf-weight-normal, 400);
+  font-size: var(--sf-text-xs);
+  text-decoration: line-through;
+  margin-right: 3px;
+}
+
+.sf-search__result-price ins {
+  display: inline !important;
+  text-decoration: none;
+  color: var(--sf-color-primary, #c0392b);
+}
+
+.sf-search__result-price .woocommerce-Price-amount {
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/* ── Add to cart button ───────────────────────────── */
+.sf-search__atc {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: var(--sf-color-primary, #c0392b);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #fff;
+  flex-shrink: 0;
+  padding: 0;
+  position: relative;
+  transition: background var(--sf-transition), transform var(--sf-transition);
+}
+
+.sf-search__atc:hover:not(:disabled) {
+  background: #a93226;
+  transform: scale(1.08);
+}
+
+.sf-search__atc:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+/* Plus icon — visible by default */
+.sf-search__atc > svg:first-child {
+  position: absolute;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+/* Checkmark — hidden by default */
+.sf-search__atc-check {
+  position: absolute;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+/* Loading state — pulse the button */
+.sf-search__atc.is-loading {
+  background: #888;
+  animation: sf-atc-pulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes sf-atc-pulse {
+  0%   { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+/* Success state — show checkmark, hide plus */
+.sf-search__atc.is-added {
+  background: #16a34a;
+}
+
+.sf-search__atc.is-added > svg:first-child {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.sf-search__atc.is-added .sf-search__atc-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* --------------------------------------------------------------------------
+   9. Results footer — "view all" link
+   -------------------------------------------------------------------------- */
+.sf-search__foot {
+  padding: var(--sf-space-3) var(--sf-space-5) var(--sf-space-5);
+  border-top: 1px solid #f0f0f0;
+}
+
+.sf-search__all {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sf-space-2);
+  font-size: var(--sf-text-sm);
+  font-weight: var(--sf-weight-semibold);
+  color: var(--sf-color-primary, #c0392b);
+  text-decoration: none;
+  transition: gap var(--sf-transition);
+}
+
+.sf-search__all:hover {
+  gap: var(--sf-space-3);
+}
+
+/* --------------------------------------------------------------------------
+   10. Empty state
+   -------------------------------------------------------------------------- */
+.sf-search__empty {
+  padding: var(--sf-space-10) var(--sf-space-5);
+  text-align: center;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sf-space-3);
+}
+
+.sf-search__empty-icon {
+  color: #e5e7eb;
+}
+
+.sf-search__empty-title {
+  font-size: var(--sf-text-base);
+  font-weight: var(--sf-weight-semibold);
+  color: #374151;
+  margin: 0;
+}
+
+.sf-search__empty-sub {
+  font-size: var(--sf-text-sm);
+  color: #9ca3af;
+  margin: 0;
+}
+
+.sf-search__empty-sub a {
+  color: var(--sf-color-primary, #c0392b);
+  text-decoration: none;
+}
+
+.sf-search__empty-sub a:hover {
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   11. Mobile
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  .sf-search {
+    padding-top: 0;
+    align-items: flex-end;
+  }
+
+  .sf-search__panel {
+    max-width: 100%;
+    max-height: 88vh;
+    border-radius: 16px 16px 0 0;
+    transform: translateY(16px);
+  }
+
+  .sf-search.is-open .sf-search__panel {
+    transform: translateY(0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. Reduced motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .sf-search__panel,
+  .sf-search__backdrop {
+    transition: none;
+  }
+
+  .sf-search__skeleton-thumb,
+  .sf-search__skeleton-line {
+    animation: none;
+    background: #f3f4f6;
+  }
+}

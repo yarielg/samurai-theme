@@ -5,10 +5,10 @@
  * Section order:
  *   1. Hero slider         — full-viewport, ACF slides
  *   2. Shop by Brand       — infinite-scroll brand marquee
- *   3. Shop by Category    — product_cat top-level terms with WC thumbnail images
- *   4. Category Carousel   — horizontal product strip for a configurable product_cat
+ *   3. Shop by Category    — product_cat terms, 4-col grid
+ *   4. Category Carousel   — horizontal product strip (pyro kit / configurable)
  *   5. Fire Deals          — fire-deal taxonomy products, dark/orange treatment
- *   6. Trending Now        — featured/trending products carousel with fallback
+ *   6. Shop by Effect      — effect taxonomy discovery cards (bento)
  *   7. Local Pickup        — Miami store info CTA
  *
  * @package samurai
@@ -37,10 +37,16 @@ get_header();
 	<?php /* 5. Fire Deals ──────────────────────────────────────────── */ ?>
 	<?php get_template_part( 'template-parts/home/section-fire-deals' ); ?>
 
-	<?php /* 6. Trending Now ─────────────────────────────────────────── */ ?>
-	<?php get_template_part( 'template-parts/home/section-featured' ); ?>
+	<?php /* 6. Shop by Effect ──────────────────────────────────────── */ ?>
+	<?php get_template_part( 'template-parts/home/section-effects' ); ?>
 
-	<?php /* 7. Local Pickup ─────────────────────────────────────────── */ ?>
+	<?php /* 7. Spotlight Slider ──────────────────────────────────── */ ?>
+	<?php get_template_part( 'template-parts/home/section-spotlight' ); ?>
+
+	<?php /* 8. Newsletter ───────────────────────────────────────────── */ ?>
+	<?php get_template_part( 'template-parts/home/section-newsletter' ); ?>
+
+	<?php /* 9. Local Pickup ─────────────────────────────────────────── */ ?>
 	<?php get_template_part( 'template-parts/home/section-pickup' ); ?>
 
 </main>
