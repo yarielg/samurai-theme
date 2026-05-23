@@ -95,7 +95,8 @@ if ( $sf_queried instanceof WP_Term ) {
 }
 
 /* ── Category banner data ────────────────────────────────────────────────── */
-$sf_show_cat_banner = $sf_queried instanceof WP_Term;
+$sf_show_cat_banner  = $sf_queried instanceof WP_Term;
+$sf_show_shop_banner = is_shop();
 $sf_hero_img        = '';
 $sf_tax_label       = '';
 if ( $sf_show_cat_banner ) {
@@ -173,6 +174,24 @@ get_header();
 				<?php if ( $sf_page_desc ) : ?>
 				<div class="sf-cat-banner__desc"><?php echo wp_kses_post( $sf_page_desc ); ?></div>
 				<?php endif; ?>
+				<p class="sf-cat-banner__count">
+					<?php if ( $sf_found ) :
+						printf(
+							esc_html( _n( '%s product', '%s products', $sf_found, 'samurai' ) ),
+							'<strong>' . number_format_i18n( $sf_found ) . '</strong>'
+						);
+					else :
+						esc_html_e( 'No products', 'samurai' );
+					endif; ?>
+				</p>
+			</div>
+		</div>
+		<?php endif; ?>
+
+		<?php if ( $sf_show_shop_banner ) : ?>
+		<div class="sf-cat-banner">
+			<div class="sf-cat-banner__body">
+				<h1 class="sf-cat-banner__title"><?php echo esc_html( $sf_page_title ); ?></h1>
 				<p class="sf-cat-banner__count">
 					<?php if ( $sf_found ) :
 						printf(
@@ -313,22 +332,22 @@ get_header();
 			<main class="sf-archive-main" id="sf-archive-main">
 
 				<div class="sf-archive-header">
+					<button type="button"
+					        class="sf-filter-toggle-btn js-filter-open"
+					        aria-expanded="false"
+					        aria-controls="sf-archive-sidebar">
+						<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+						<?php esc_html_e( 'Filters', 'samurai' ); ?>
+						<?php if ( $sf_active_count > 0 ) : ?>
+						<span class="sf-filter-toggle-btn__badge"><?php echo absint( $sf_active_count ); ?></span>
+						<?php endif; ?>
+					</button>
 					<div class="sf-archive-header__left">
-						<?php if ( ! $sf_show_cat_banner ) : ?>
+						<?php if ( ! $sf_show_cat_banner && ! $sf_show_shop_banner ) : ?>
 						<h1 class="sf-archive-header__title"><?php echo esc_html( $sf_page_title ); ?></h1>
 						<?php endif; ?>
 					</div>
 					<div class="sf-archive-header__right">
-						<button type="button"
-						        class="sf-filter-toggle-btn js-filter-open"
-						        aria-expanded="false"
-						        aria-controls="sf-archive-sidebar">
-							<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-							<?php esc_html_e( 'Filters', 'samurai' ); ?>
-							<?php if ( $sf_active_count > 0 ) : ?>
-							<span class="sf-filter-toggle-btn__badge"><?php echo absint( $sf_active_count ); ?></span>
-							<?php endif; ?>
-						</button>
 						<div class="sf-archive-sort">
 							<label for="sf-sort" class="screen-reader-text"><?php esc_html_e( 'Sort products', 'samurai' ); ?></label>
 							<select id="sf-sort" class="sf-archive-sort__select js-sort-select">

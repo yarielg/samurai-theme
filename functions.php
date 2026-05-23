@@ -1,7 +1,7 @@
 <?php
 defined( 'ABSPATH' ) || exit;
 
-define( 'SAMURAI_VERSION', '2.1.5' );
+define( 'SAMURAI_VERSION', '2.1.9' );
 define( 'SAMURAI_DIR', get_template_directory() );
 define( 'SAMURAI_URL', get_template_directory_uri() );
 

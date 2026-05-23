@@ -1091,7 +1091,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 200;
+  z-index: 110; /* above header (100) but below cart backdrop (199) */
   background: rgba(15, 15, 15, 0.97);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);

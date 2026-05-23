@@ -700,7 +700,7 @@
 	padding: 0;
 }
 
-.sf-co-section #payment .payment_methods {
+.sf-co-section #payment ul.payment_methods {
 	padding: 0;
 	margin: 0 0 var(--sf-space-4);
 	list-style: none;
@@ -833,6 +833,291 @@
 }
 
 /* ==========================================================================
+   CHECKOUT LOGIN MODAL
+   ========================================================================== */
+
+/* ── Trigger strip ─────────────────────────────────────────────────────────── */
+.sf-co-login-strip {
+	display: flex;
+	align-items: center;
+	gap: var(--sf-space-2);
+	padding: var(--sf-space-3) var(--sf-space-4);
+	background: var(--sf-color-surface);
+	border: 1px solid var(--sf-color-border);
+	border-radius: var(--sf-radius);
+	margin-bottom: var(--sf-space-5);
+	font-size: var(--sf-text-sm);
+	flex-wrap: wrap;
+}
+
+.sf-co-login-strip__text {
+	color: var(--sf-color-muted);
+}
+
+.sf-co-login-strip__link {
+	appearance: none;
+	background: none;
+	border: none;
+	padding: 0;
+	font-family: var(--sf-font-heading);
+	font-size: var(--sf-text-sm);
+	font-weight: var(--sf-weight-bold);
+	color: var(--sf-color-primary);
+	cursor: pointer;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	transition: opacity var(--sf-transition);
+}
+
+.sf-co-login-strip__link:hover {
+	opacity: 0.75;
+}
+
+/* ── Modal overlay ─────────────────────────────────────────────────────────── */
+.sf-co-login-modal {
+	display: none;
+	position: fixed;
+	inset: 0;
+	z-index: var(--sf-z-modal, 300);
+	align-items: center;
+	justify-content: center;
+	padding: var(--sf-space-4);
+}
+
+.sf-co-login-modal.is-open {
+	display: flex;
+}
+
+/* ── Backdrop ──────────────────────────────────────────────────────────────── */
+.sf-co-login-modal__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.62);
+	cursor: pointer;
+}
+
+/* ── Dialog card ───────────────────────────────────────────────────────────── */
+.sf-co-login-modal__dialog {
+	position: relative;
+	width: 100%;
+	max-width: 420px;
+	background: #fff;
+	border-radius: var(--sf-radius-lg);
+	border-top: 4px solid var(--sf-color-primary);
+	box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+	max-height: calc(100dvh - var(--sf-space-8));
+	overflow-y: auto;
+	animation: sf-co-login-in 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes sf-co-login-in {
+	from { opacity: 0; transform: translateY(12px) scale(0.97); }
+	to   { opacity: 1; transform: none; }
+}
+
+/* ── Head ──────────────────────────────────────────────────────────────────── */
+.sf-co-login-modal__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--sf-space-4) var(--sf-space-5);
+	background: var(--sf-color-dark);
+}
+
+.sf-co-login-modal__head-left {
+	display: flex;
+	align-items: center;
+	gap: var(--sf-space-2);
+	color: var(--sf-color-secondary);
+}
+
+.sf-co-login-modal__head-left svg {
+	display: block;
+	flex-shrink: 0;
+}
+
+.sf-co-login-modal__title {
+	font-family: var(--sf-font-heading);
+	font-weight: var(--sf-weight-bold);
+	font-size: var(--sf-text-base);
+	color: #fff;
+	margin: 0 !important;
+	line-height: 1;
+	letter-spacing: 0.03em;
+}
+
+.sf-co-login-modal__close {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	border: none;
+	background: rgba(255, 255, 255, 0.1);
+	color: #fff;
+	border-radius: 50%;
+	cursor: pointer;
+	transition: background var(--sf-transition);
+	padding: 0;
+	flex-shrink: 0;
+}
+
+.sf-co-login-modal__close:hover {
+	background: rgba(255, 255, 255, 0.22);
+}
+
+/* ── Body ──────────────────────────────────────────────────────────────────── */
+.sf-co-login-modal__body {
+	padding: var(--sf-space-6) var(--sf-space-5);
+}
+
+/* Error notices captured from failed login attempt */
+.sf-co-login-modal__errors {
+	margin: 0 0 var(--sf-space-4);
+	padding: var(--sf-space-3) var(--sf-space-4);
+	background: #fef2f2;
+	border-left: 4px solid var(--sf-color-error, #e2292b);
+	border-radius: var(--sf-radius);
+	list-style: none;
+	font-size: var(--sf-text-sm);
+	color: #991b1b;
+}
+
+/* ── WC form fields inside the modal ──────────────────────────────────────── */
+.sf-co-login-modal__body .woocommerce-form-row {
+	margin-bottom: var(--sf-space-4);
+}
+
+.sf-co-login-modal__body .woocommerce-form-row label {
+	display: block;
+	font-size: var(--sf-text-sm);
+	font-weight: var(--sf-weight-semibold);
+	color: #374151;
+	margin-bottom: var(--sf-space-1);
+	letter-spacing: 0.01em;
+}
+
+.sf-co-login-modal__body .woocommerce-form-row label .required {
+	color: var(--sf-color-primary);
+}
+
+.sf-co-login-modal__body .input-text {
+	display: block !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
+	height: 50px !important;
+	padding: 0 var(--sf-space-4) !important;
+	border-radius: var(--sf-radius) !important;
+	border: 1.5px solid #e5e7eb !important;
+	background: #fafafa !important;
+	font-size: var(--sf-text-base) !important;
+	color: #111827 !important;
+	font-family: var(--sf-font-body) !important;
+	outline: none !important;
+	transition: border-color var(--sf-transition), box-shadow var(--sf-transition) !important;
+	box-shadow: none !important;
+}
+
+.sf-co-login-modal__body .input-text:focus {
+	border-color: var(--sf-color-primary) !important;
+	background: #fff !important;
+	box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12) !important;
+}
+
+/* ── Remember me ───────────────────────────────────────────────────────────── */
+.sf-co-login-modal__body .woocommerce-form-login__rememberme {
+	margin-bottom: var(--sf-space-4);
+}
+
+.sf-co-login-modal__body .woocommerce-form__label-for-checkbox {
+	display: flex;
+	align-items: center;
+	gap: var(--sf-space-2);
+	font-size: var(--sf-text-sm);
+	color: #374151;
+	cursor: pointer;
+}
+
+.sf-co-login-modal__body .woocommerce-form__input-checkbox {
+	width: 16px;
+	height: 16px;
+	accent-color: var(--sf-color-primary);
+	flex-shrink: 0;
+	cursor: pointer;
+}
+
+/* ── Lost password — hidden in checkout modal ──────────────────────────────── */
+.sf-co-login-modal__body .lost_password {
+	display: none;
+}
+
+/* ── Submit button ─────────────────────────────────────────────────────────── */
+.sf-co-login-modal__body .woocommerce-FormRow {
+	margin: 0;
+}
+
+.sf-co-login-modal__body .woocommerce-form-login__submit {
+	display: flex !important;
+	align-items: center !important;
+	justify-content: center !important;
+	width: 100% !important;
+	height: 52px !important;
+	padding: 0 var(--sf-space-6) !important;
+	border-radius: var(--sf-radius-full) !important;
+	background: var(--sf-color-primary) !important;
+	color: #fff !important;
+	border: none !important;
+	font-family: var(--sf-font-heading) !important;
+	font-weight: var(--sf-weight-black) !important;
+	font-size: var(--sf-text-sm) !important;
+	text-transform: uppercase !important;
+	letter-spacing: 0.08em !important;
+	cursor: pointer !important;
+	box-shadow: 0 4px 14px rgba(192, 57, 43, 0.3) !important;
+	transition: background var(--sf-transition), box-shadow var(--sf-transition), transform 0.12s !important;
+}
+
+.sf-co-login-modal__body .woocommerce-form-login__submit:hover {
+	background: #a93226 !important;
+	box-shadow: 0 6px 24px rgba(192, 57, 43, 0.4) !important;
+	transform: translateY(-1px) !important;
+}
+
+.sf-co-login-modal__body .woocommerce-form-login__submit:active {
+	transform: translateY(0) !important;
+	box-shadow: 0 4px 14px rgba(192, 57, 43, 0.3) !important;
+}
+
+/* ── Footer / guest CTA ────────────────────────────────────────────────────── */
+.sf-co-login-modal__footer {
+	margin-top: var(--sf-space-5);
+	padding-top: var(--sf-space-4);
+	border-top: 1px solid #f3f4f6;
+	font-size: var(--sf-text-sm);
+	color: var(--sf-color-muted);
+	text-align: center;
+}
+
+.sf-co-login-modal__guest-btn {
+	appearance: none;
+	background: none;
+	border: none;
+	padding: 0;
+	margin-left: 4px;
+	font-size: var(--sf-text-sm);
+	font-weight: var(--sf-weight-semibold);
+	color: var(--sf-color-primary);
+	cursor: pointer;
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	transition: opacity var(--sf-transition);
+}
+
+.sf-co-login-modal__guest-btn:hover {
+	opacity: 0.75;
+}
+
+/* ==========================================================================
    REDUCED MOTION
    ========================================================================== */
 
@@ -842,5 +1127,9 @@
 	.sf-steps__line {
 		transition: none;
 		transform: none !important;
+	}
+
+	.sf-co-login-modal__dialog {
+		animation: none;
 	}
 }

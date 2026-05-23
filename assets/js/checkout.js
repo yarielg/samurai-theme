@@ -311,3 +311,80 @@
 	showPanel(1);  // panel 1 visible, panel 2 off-screen; step indicator → Shipping
 
 })();
+
+// ── Login modal ───────────────────────────────────────────────────────────────
+// Independent IIFE: no dependency on the checkout form or step nav above.
+(function () {
+	'use strict';
+
+	var modal   = document.getElementById('sf-co-login-modal');
+	var trigger = document.querySelector('.js-co-login-open');
+	if (!modal) return;
+
+	var FOCUSABLE = 'a[href], button:not([disabled]), input:not([type="hidden"]), select, textarea, [tabindex]:not([tabindex="-1"])';
+
+	function getFocusables() {
+		return Array.from(modal.querySelectorAll(FOCUSABLE));
+	}
+
+	function openModal() {
+		modal.classList.add('is-open');
+		modal.setAttribute('aria-hidden', 'false');
+		document.documentElement.style.overflow = 'hidden';
+
+		var focusables = getFocusables();
+		if (focusables.length) {
+			// Small delay so the display:flex paint settles before focusing
+			setTimeout(function () { focusables[0].focus(); }, 60);
+		}
+	}
+
+	function closeModal() {
+		modal.classList.remove('is-open');
+		modal.setAttribute('aria-hidden', 'true');
+		document.documentElement.style.overflow = '';
+		if (trigger) trigger.focus();
+	}
+
+	// Open on trigger click
+	if (trigger) {
+		trigger.addEventListener('click', openModal);
+	}
+
+	// Auto-open if server rendered .is-open (failed login attempt on page reload)
+	if (modal.classList.contains('is-open')) {
+		document.documentElement.style.overflow = 'hidden';
+		var focusables = getFocusables();
+		if (focusables.length) {
+			setTimeout(function () { focusables[0].focus(); }, 100);
+		}
+	}
+
+	// Close on backdrop / × / "Continue as guest"
+	document.addEventListener('click', function (e) {
+		if (e.target.closest('.js-co-login-close')) closeModal();
+	});
+
+	// Close on Escape
+	document.addEventListener('keydown', function (e) {
+		if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+			e.preventDefault();
+			closeModal();
+		}
+	});
+
+	// Focus trap — keep Tab inside the dialog
+	modal.addEventListener('keydown', function (e) {
+		if (e.key !== 'Tab') return;
+		var focusables = getFocusables();
+		if (!focusables.length) return;
+		var first = focusables[0];
+		var last  = focusables[focusables.length - 1];
+		if (e.shiftKey) {
+			if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+		} else {
+			if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
+		}
+	});
+
+})();
